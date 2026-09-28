@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Supreme Auto Parts</title><link rel="stylesheet" href="/css/style.css">
+<style>.admin-tab-panel{display:none}.admin-tab-panel.active{display:block}.preview-box{margin-top:.4rem}</style>
+</head>
+<body>
+<header class="header"><div class="container header-inner">
+  <a href="/" class="logo">SUPREME <span>AUTO PARTS</span></a>
+  <nav class="nav"><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a></nav>
+</div></header>
+<main class="container section">
+  <div id="login-section" style="max-width:400px">
+    <h1>Admin Login</h1>
+    <form id="login-form" class="admin-form" style="margin-top:1rem">
+      <input type="text" name="username" placeholder="Username" required autocomplete="off">
+      <input type="password" name="password" placeholder="Password" required autocomplete="off">
+      <button class="btn" type="submit">Login</button>
+    </form>
+  </div>
+  <div id="dashboard-section" style="display:none">
+    <div class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <span>Welcome, <strong id="admin-name"></strong></span>
+      <button id="logout-btn" class="btn danger">Logout</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button data-tab="products" class="active">📦 Products</button>
+      <button data-tab="offers">🔥 Offers</button>
+      <button data-tab="categories">🗂️ Categories</button>
+      <button data-tab="orders">🛒 Orders</button>
+    </div>
+
+    <div id="tab-products" class="admin-tab-panel active">
+      <section class="admin-card">
+        <h2 id="product-form-title">Add / Update Product</h2>
+        <p style="color:#666;margin-bottom:.8rem">Upload a real product image. JPG, PNG, WebP or GIF up to 8 MB. Description and price are required.</p>
+        <form id="product-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Product Name *" required>
+          <select name="category_id" id="prod-category"></select>
+          <input type="text" name="brand" placeholder="Brand">
+          <textarea name="description" placeholder="Description *" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Price (KSh) *" step="0.01" required>
+          <input type="number" name="stock" placeholder="Stock quantity">
+          <label style="font-weight:700">📸 Product Image (upload):<input type="file" name="image" accept="image/*"></label>
+          <div id="prod-preview" class="preview-box"></div>
+          <label style="font-weight:700">Or paste Image URL:<input type="text" name="image_url" placeholder="https://..."></label>
+          <label><input type="checkbox" name="universal" value="1"> Universal fit</label>
+          <input type="text" name="car_make" placeholder="Car make (e.g. Toyota)">
+          <input type="text" name="car_model" placeholder="Car model (e.g. Hilux)">
+          <input type="text" name="fits" placeholder="Other fits info">
+          <input type="text" name="sku" placeholder="SKU">
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn" type="submit" id="product-submit">Save Product</button>
+            <button class="btn dark" type="button" id="product-cancel" style="display:none">Cancel Edit</button>
+          </div>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Products</h2><table id="products-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-offers" class="admin-tab-panel">
+      <section class="admin-card">
+        <h2 id="offer-form-title">Add / Update Offer</h2>
+        <p style="color:#666;margin-bottom:.8rem">Description and price are required. Old price shows the discount.</p>
+        <form id="offer-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="title" placeholder="Offer Title *" required>
+          <textarea name="description" placeholder="Description *" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Offer Price (KSh) *" step="0.01" required>
+          <input type="number" name="old_price" placeholder="Old Price (KSh)" step="0.01">
+          <label style="font-weight:700">📸 Offer Image (upload):<input type="file" name="image" accept="image/*"></label>
+          <div id="offer-preview" class="preview-box"></div>
+          <label style="font-weight:700">Or paste Image URL:<input type="text" name="image_url" placeholder="https://..."></label>
+          <label><input type="checkbox" name="active" value="1" checked> Active</label>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn" type="submit" id="offer-submit">Save Offer</button>
+            <button class="btn dark" type="button" id="offer-cancel" style="display:none">Cancel Edit</button>
+          </div>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Offers</h2><table id="offers-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-categories" class="admin-tab-panel">
+      <section class="admin-card">
+        <h2 id="category-form-title">Add Category</h2>
+        <p style="color:#666;margin-bottom:.8rem">Upload a real category image so it replaces the emoji icon on the site.</p>
+        <form id="category-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Category Name *" required>
+          <input type="text" name="slug" placeholder="Slug (e.g. led-bulbs) *" required>
+          <input type="text" name="icon" placeholder="Fallback icon (emoji)">
+          <textarea name="description" placeholder="Description"></textarea>
+          <label style="font-weight:700">📸 Category Image (upload):<input type="file" name="image" accept="image/*"></label>
+          <div id="cat-preview" class="preview-box"></div>
+          <label style="font-weight:700">Or paste Image URL:<input type="text" name="image_url" placeholder="https://..."></label>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn" type="submit" id="category-submit">Add Category</button>
+            <button class="btn dark" type="button" id="category-cancel" style="display:none">Cancel Edit</button>
+          </div>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Categories</h2><table id="categories-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-orders" class="admin-tab-panel">
+      <section class="admin-card"><h2>Customer Orders</h2><table id="orders-table" class="admin-table"></table></section>
+    </div>
+  </div>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Admin</div></div></footer>
+<script src="/js/admin.js"></script>
+</body></html>
