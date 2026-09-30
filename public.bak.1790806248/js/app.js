@@ -23,8 +23,8 @@ async function api(url, options={}){
 
 function categoryCard(c){
   const inner = c.image
-    ? `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`
-    : `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`;
+    ? `<div class="cat-img" style="background-image:url('${c.image}')"></div>`
+    : `<div class="cat-img cat-img-fallback"><span>${c.icon || '📦'}</span></div>`;
   return `<a class="category-card" href="/products.html?category=${c.slug}">${inner}<div class="cat-body"><h3>${c.name}</h3><p>${c.description||''}</p></div></a>`;
 }
 
