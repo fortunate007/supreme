@@ -72,9 +72,9 @@ img{max-width:100%;display:block}
 
 /* Products */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem}
-
-
-
+.product-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;flex-direction:column;transition:transform .2s}
+.product-card:hover{transform:translateY(-3px)}
+.product-card img{width:100%;height:180px;object-fit:cover;background:#ddd}
 .product-info{padding:1rem;display:flex;flex-direction:column;gap:.35rem;flex:1}
 .product-info h3{font-size:1rem}
 .badge{background:var(--red);color:var(--white);font-size:.7rem;padding:.2rem .5rem;border-radius:999px;align-self:flex-start;text-transform:uppercase;letter-spacing:.5px}
@@ -184,119 +184,9 @@ img{max-width:100%;display:block}
   object-fit: cover; border-radius: 8px;
 }
 /* ===== site info injected ===== */
-
-.sc-wrap{max-width:900px;margin:0 auto;text-align:center}
-.sc-wrap h3{margin:0 0 1rem;font-size:1.5rem}
-.sc-addr{margin:.5rem 0 1rem;line-height:1.5}
-.sc-addr a,.map-link{color:inherit;text-decoration:none}
-.sc-addr a:hover,.map-link:hover{color:#c8102e;text-decoration:underline}
-.sc-line{margin:.35rem 0}
-.sc-line a{color:#c8102e;text-decoration:none}
-.sc-line a:hover{text-decoration:underline}
-.sc-socials,.footer-socials{display:flex;gap:.75rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
-.footer-socials{padding:1rem 0}
-
-
-
-/* ===== end site info ===== */
-
-/* ============ appealing shop ============ */
-
-.shop-head{max-width:1200px;margin:0 auto 1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.shop-head h2{margin:0;font-size:1.75rem}
-.shop-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem}
-
-
-
-.product-card 
-.product-card:hover 
-
-
-
-
-
-.product-card 
-
-.product-card 
-.product-card 
-
-/* ============ toast ============ */
-
-.pc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ============ why us (light, inherits page bg) ============ */
-
-
-
-
-
-
-.why-block 
-
-.why-block 
-.why-block 
-.why-block 
-
-/* ============ product card (shop all) ============ */
-
-.shop-head{max-width:1200px;margin:0 auto 1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.shop-head h2{margin:0;font-size:1.75rem}
-.shop-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem}
-
-
-
-.product-card 
-.product-card:hover 
-
-
-
-
-
-
-.product-card 
-
-.product-card 
-.product-card 
-
-/* ============ why supreme (inherits page bg) ============ */
-.why-block{padding:2.5rem 1rem}
-.why-block .why-wrap{max-width:1200px;margin:0 auto}
-.why-block h2{text-align:center;font-size:1.8rem;margin:0 0 .4rem}
-.why-block .why-sub{text-align:center;margin:0 0 2rem;opacity:.7}
-.why-block .why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-.why-block .why-card{padding:1.3rem;border-radius:14px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.08);transition:.2s}
-.why-block .why-card:hover{border-color:#c8102e;transform:translateY(-2px)}
-.why-block .why-emoji{font-size:2rem;line-height:1;margin-bottom:.6rem;display:block}
-.why-block .why-card h3{margin:0 0 .35rem;font-size:1rem}
-.why-block .why-card p{margin:0;opacity:.8;line-height:1.5;font-size:.88rem}
-
-/* ============ shop all ============ */
-.shop-section{padding:2rem 1rem;max-width:1240px;margin:0 auto}
-.shop-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem}
-.shop-head h2{margin:0;font-size:1.75rem}
-.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.25rem}
-.product-card{background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden;transition:.25s;display:flex;flex-direction:column}
-.product-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.08);border-color:#c8102e33}
-.pc-media{aspect-ratio:1/1;background:#f5f6f7;overflow:hidden}
-.pc-media img{width:100%;height:100%;object-fit:cover;transition:.3s}
-.product-card:hover .pc-media img{transform:scale(1.05)}
-.pc-body{padding:.85rem .9rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
-.pc-name{font-weight:600;font-size:.98rem;line-height:1.35;color:#111;min-height:2.6em}
-.pc-desc{font-size:.85rem;color:#666;line-height:1.45;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em}
-.pc-price{font-weight:700;color:#c8102e;font-size:1.1rem;margin-top:auto}
-.pc-actions{display:grid;grid-template-columns:1fr auto;gap:.5rem;margin-top:.6rem}
-.pc-cart{background:#111;color:#fff;border:0;padding:.75rem .8rem;border-radius:9px;font-weight:600;cursor:pointer;font-size:.85rem;transition:.2s}
-.pc-cart:hover{background:#c8102e}
-.pc-wa{background:#25D366;color:#fff;border:0;width:44px;height:44px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;transition:.2s}
-.pc-wa:hover{background:#1ebe57;transform:scale(1.05)}
-.pc-wa svg{width:22px;height:22px}
-.pc-toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:.8rem 1.2rem;border-radius:10px;opacity:0;transition:.3s;z-index:9999;font-size:.9rem}
-.pc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ============ site contact + socials ============ */
 .site-contact{padding:2.5rem 1rem;background:#f8f9fa;border-top:1px solid #eee}
 .sc-wrap{max-width:900px;margin:0 auto;text-align:center}
-.sc-wrap h3{margin:0 0 1rem;font-size:1.4rem}
+.sc-wrap h3{margin:0 0 1rem;font-size:1.5rem}
 .sc-addr{margin:.5rem 0 1rem;line-height:1.5}
 .sc-addr a,.map-link{color:inherit;text-decoration:none}
 .sc-addr a:hover,.map-link:hover{color:#c8102e;text-decoration:underline}
@@ -308,3 +198,4 @@ img{max-width:100%;display:block}
 .soc-link{display:inline-flex;width:36px;height:36px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;transition:.2s}
 .soc-link:hover{background:#c8102e;transform:translateY(-2px)}
 .soc-link svg{width:18px;height:18px}
+/* ===== end site info ===== */
