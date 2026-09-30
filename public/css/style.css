@@ -174,3 +174,12 @@ img{max-width:100%;display:block}
 .admin-tab-panel.active{display:block}
 .admin-form input[type=file]{padding:.5rem;background:#fafafa;border:1px dashed #bbb;border-radius:6px;cursor:pointer}
 .admin-form input[type=file]:hover{border-color:var(--red)}
+.product-img, .category-img {
+  width: 100%; aspect-ratio: 1/1;
+  object-fit: cover; border-radius: 8px;
+  background: #f3f4f6;
+}
+.offer-img {
+  width: 100%; aspect-ratio: 16/7;
+  object-fit: cover; border-radius: 8px;
+}
