@@ -76,10 +76,10 @@
     <div id="tab-categories" class="admin-tab-panel" style="display:none">
       <section class="admin-card">
         <h2>Add Category</h2>
-        <form id="category-form" class="admin-form" enctype="multipart/form-data">
+        <form id="category-form" class="admin-form">
           <input type="text" name="name" placeholder="Category Name *" required>
           <input type="text" name="slug" placeholder="Slug (e.g. led-bulbs) *" required>
-          <input type="file" name="image" accept="image/*" class="form-input">
+          <input type="text" name="icon" placeholder="Icon (emoji)">
           <textarea name="description" placeholder="Description"></textarea>
           <button class="btn" type="submit">Add Category</button>
         </form>
