@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product | Supreme Auto Parts</title><link rel="stylesheet" href="/css/style.css"></head>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop | Supreme Auto Parts</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
 <body>
 <div class="top-banner"><div class="scroll"><span>⚡ At Supreme Auto Spares; Quality is Our Name ⚡</span><span>🚚 East Africa Delivery Within 2 Hours</span><span>🛡️ Warranty on All Products</span><span>📞 WhatsApp: +254 759 929 22</span><span>⚡ At Supreme Auto Spares; Quality is Our Name ⚡</span></div></div>
 <header class="header"><div class="container header-inner">
@@ -13,11 +16,21 @@
 <aside id="side-menu" class="side-menu">
   <div class="side-menu-header"><h2>Menu</h2><button onclick="toggleMenu()">✕</button></div>
   <a href="/" class="menu-item highlight">🏠 Home</a><a href="/products.html" class="menu-item">🛒 Shop All</a><a href="/offers.html" class="menu-item highlight">🔥 Offers</a><a href="/products.html?universal=1" class="menu-item">🌍 Universal Parts</a><a href="/faqs.html" class="menu-item">❓ FAQs</a><a href="/contact.html" class="menu-item">📞 Contact</a>
-  <div class="menu-divider"></div><div id="category-menu" class="category-menu"></div>
+  <div class="menu-divider"></div>
+  <div id="category-menu" class="category-menu"></div>
 </aside>
-<main class="container section" id="product-detail"></main>
-<a class="wa-float" href="https://wa.me/25475992922" target="_blank">💬</a>
-<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | WhatsApp +254 759 929 22</div></div></footer>
+<main class="container section">
+  <h1 id="products-title">All Products</h1>
+  <form id="filter-form" class="filter-form">
+    <input type="text" name="search" placeholder="Search parts...">
+    <input type="text" name="car_make" placeholder="Car make (e.g. Toyota)">
+    <input type="text" name="car_model" placeholder="Car model (e.g. Hilux)">
+    <select name="category" id="category-select"></select>
+    <label><input type="checkbox" name="universal" value="1"> Universal only</label>
+    <button class="btn" type="submit">Filter</button>
+  </form>
+  <div id="products-grid" class="product-grid"></div>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Kirinyaga Road, Next to Kingdom | WhatsApp +254 759 929 22</div></div></footer>
 <script src="/js/app.js"></script>
-<script src="/js/site-info.js" defer></script>
 </body></html>

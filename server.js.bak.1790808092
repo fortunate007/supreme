@@ -176,22 +176,6 @@ app.use(session({
   resave: false, saveUninitialized: false,
   cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax' }
 }));
-
-/* ===== settings api injected ===== */
-app.get("/api/settings", (req,res)=>{
-  const rows = require("better-sqlite3")(require("path").join(__dirname,"supreme.db"))
-    .prepare("SELECT key,value FROM settings").all();
-  const out = {}; rows.forEach(r=>out[r.key]=r.value);
-  res.json(out);
-});
-app.post("/api/admin/settings", (req,res)=>{
-  const db = require("better-sqlite3")(require("path").join(__dirname,"supreme.db"));
-  const up = db.prepare("INSERT INTO settings (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value");
-  const tx = db.transaction(obj=>{ for(const k in obj) up.run(k, String(obj[k]??"")); });
-  try { tx(req.body||{}); res.json({ok:true}); } catch(e){ res.status(500).json({error:e.message}); }
-});
-/* ===== end settings api ===== */
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 const requireAdmin = (req, res, next) => {
