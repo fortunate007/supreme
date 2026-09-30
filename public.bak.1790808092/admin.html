@@ -94,40 +94,4 @@
 </main>
 <footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Admin Panel</div></div></footer>
 <script src="/js/admin.js"></script>
-<script src="/js/site-info.js" defer></script>
-
-<section id="settings-panel" style="max-width:900px;margin:2rem auto;padding:1.5rem;border:1px solid #eee;border-radius:10px;background:#fff">
-  <h2>Store Settings</h2>
-  <p style="color:#666;font-size:.9rem">Editable contact + social info shown on the whole site.</p>
-  <form id="settings-form" style="display:grid;gap:.75rem">
-    <label>Business Name<input name="business_name" class="form-input" style="width:100%"></label>
-    <label>Address<input name="address" class="form-input" style="width:100%"></label>
-    <label>Google Maps URL<input name="maps_url" class="form-input" style="width:100%" placeholder="https://www.google.com/maps/search/?api=1&query=Kirinyaga+Road+Nairobi"></label>
-    <label>Phone<input name="phone" class="form-input" style="width:100%"></label>
-    <label>WhatsApp<input name="whatsapp" class="form-input" style="width:100%"></label>
-    <label>Email<input name="email" class="form-input" style="width:100%"></label>
-    <label>Hours<input name="hours" class="form-input" style="width:100%"></label>
-    <label>Facebook URL<input name="facebook" class="form-input" style="width:100%"></label>
-    <label>Instagram URL<input name="instagram" class="form-input" style="width:100%"></label>
-    <label>X / Twitter URL<input name="twitter" class="form-input" style="width:100%"></label>
-    <label>TikTok URL<input name="tiktok" class="form-input" style="width:100%"></label>
-    <label>YouTube URL<input name="youtube" class="form-input" style="width:100%"></label>
-    <label>LinkedIn URL<input name="linkedin" class="form-input" style="width:100%"></label>
-    <button type="submit" style="background:#c8102e;color:#fff;padding:.75rem;border:0;border-radius:8px;cursor:pointer">Save Settings</button>
-    <span id="settings-msg" style="color:green;display:none">Saved ✔</span>
-  </form>
-</section>
-<script>
-(async()=>{
-  const f=document.getElementById("settings-form"), msg=document.getElementById("settings-msg");
-  try{ const s=await (await fetch("/api/settings")).json(); for(const k in s){ if(f.elements[k]) f.elements[k].value=s[k]; } }catch(e){}
-  f.addEventListener("submit",async e=>{
-    e.preventDefault();
-    const data=Object.fromEntries(new FormData(f).entries());
-    const r=await fetch("/api/admin/settings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-    if(r.ok){ msg.style.display="inline"; setTimeout(()=>msg.style.display="none",2000); sessionStorage.removeItem("supreme_settings_v1"); }
-    else alert("Save failed");
-  });
-})();
-</script>
 </body></html>
