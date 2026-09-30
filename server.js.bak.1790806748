@@ -142,7 +142,7 @@ const seedCategories = [
 ];
 
 if (db.prepare('SELECT COUNT(*) as c FROM categories').get().c === 0) {
-  const ins = db.prepare('INSERT INTO categories (name, slug, image, description) VALUES (?, ?, ?, ?)');
+  const ins = db.prepare('INSERT INTO categories (name, slug, icon, description) VALUES (?, ?, ?, ?)');
   db.transaction((rows) => { for (const r of rows) ins.run(...r); })(seedCategories);
 }
 
@@ -301,7 +301,7 @@ app.put('/api/admin/categories/:id', requireAdmin, upload.single('image'), (req,
   let image = ex.image;
   if (req.file) image = '/uploads/' + req.file.filename;
   else if (req.body.image) image = req.body.image;
-  db.prepare('UPDATE categories SET name = ?, slug = ?, image = ?, image=?, description=? WHERE id=?')
+  db.prepare('UPDATE categories SET name=?, slug=?, icon=?, image=?, description=? WHERE id=?')
     .run(name, slug, icon || '', image, description || '', req.params.id);
   res.json({ ok: true, image });
 });
