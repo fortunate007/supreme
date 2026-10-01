@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart | Supreme Auto Parts</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<div class="top-banner"><div class="scroll"><span>⚡ At Supreme Auto Spares; Quality is Our Name ⚡</span><span>🛡️ Warranty on All Products</span><span>📞 WhatsApp: +254 759 929 22</span><span>⚡ At Supreme Auto Spares; Quality is Our Name ⚡</span></div></div>
+<header class="header"><div class="container header-inner">
+  <button id="menu-btn" class="menu-btn">☰</button>
+  <a href="/" class="logo">SUPREME <span>AUTO PARTS</span></a>
+  <nav class="nav"><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a><a href="/faqs.html">FAQs</a><a href="/contact.html">Contact</a><a href="/cart.html">Cart <span id="cart-count" class="cart-count">0</span></a><a href="/admin.html">Admin</a></nav>
+</div></header>
+<div id="overlay" class="overlay"></div>
+<aside id="side-menu" class="side-menu">
+  <div class="side-menu-header"><h2>Menu</h2><button onclick="toggleMenu()">✕</button></div>
+  <a href="/" class="menu-item highlight">🏠 Home</a><a href="/products.html" class="menu-item">🛒 Shop All</a><a href="/offers.html" class="menu-item highlight">🔥 Offers</a><a href="/products.html?universal=1" class="menu-item">🌍 Universal Parts</a><a href="/faqs.html" class="menu-item">❓ FAQs</a><a href="/contact.html" class="menu-item">📞 Contact</a>
+  <div class="menu-divider"></div><div id="category-menu" class="category-menu"></div>
+</aside>
+<main class="container section">
+  <h1>Your Cart</h1>
+  <div id="cart-items"></div>
+  <h3 style="margin-top:1rem">Total: <span id="cart-total">KSh 0</span></h3>
+  <h2 style="margin-top:2rem">Checkout / Order Request</h2>
+  <p style="margin-bottom:1rem">Fill in your delivery details. We deliver across East Africa within 72 hours.</p>
+  <form id="checkout-form" class="checkout-form">
+    <input type="text" name="customer_name" placeholder="Full Name" required>
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+    <input type="email" name="email" placeholder="Email (optional)">
+    <input type="text" name="location" placeholder="Delivery Location (East Africa)" required>
+    <button class="btn" type="submit">Submit Order</button>
+    <a class="btn green" href="https://wa.me/254759929222" target="_blank">Or Order via WhatsApp</a>
+  </form>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | WhatsApp +254 759 929 22</div></div></footer>
+<script src="/js/app.js"></script>
+<script src="/js/site-info.js" defer></script>
+<script src="/js/shop-enhance.js" defer></script>
+</body></html>
