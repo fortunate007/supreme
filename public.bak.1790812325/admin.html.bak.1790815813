@@ -15,6 +15,7 @@
       <input type="password" name="password" placeholder="Password" required>
       <button class="btn" type="submit">Login</button>
     </form>
+    <p style="margin-top:1rem;color:#666">Default credentials: <strong>admin / supreme123</strong></p>
   </div>
   <div id="dashboard-section" style="display:none">
     <div class="admin-header">
@@ -129,4 +130,6 @@
   });
 })();
 </script>
+<script src="/js/shop-enhance.js" defer></script>
+<script src="/js/hero.js" defer></script>
 </body></html>
