@@ -426,6 +426,22 @@ app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
 });
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/api/_health', (req, res) => {
+  res.json({
+    products:   db.prepare('SELECT COUNT(*) as c FROM products').get().c,
+    categories: db.prepare('SELECT COUNT(*) as c FROM categories').get().c,
+    offers:     db.prepare('SELECT COUNT(*) as c FROM offers').get().c,
+    storage:    typeof useCloud !== 'undefined' && useCloud ? 'cloudinary (persistent ✔)' : 'local-disk (EPHEMERAL)',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null,
+    db_path:    typeof DB_PATH !== 'undefined' ? DB_PATH : 'unknown'
+  });
+});
+
+app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
+  res.sendFile(path.join(__dirname, 'private', 'admin.html'));
+});
+
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => {
   console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
