@@ -8,6 +8,22 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const Database = require('better-sqlite3');
 
+// ---------- Cloudinary (optional — falls back to local disk if not configured) ----------
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+const useCloud = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+if (useCloud) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+  console.log('✔ Cloudinary storage enabled');
+} else {
+  console.warn('⚠ Cloudinary env vars missing — using LOCAL disk storage (images will be lost on restart)');
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
@@ -69,10 +85,16 @@ CREATE TABLE IF NOT EXISTS admins (
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
 `);
 
 try { db.exec('ALTER TABLE categories ADD COLUMN image TEXT'); } catch(e){}
+try { db.exec('ALTER TABLE products ADD COLUMN updated_at DATETIME'); } catch(e){}
 
+// ---------- Seed categories (icon stays in the icon column!) ----------
 const seedCategories = [
   ['LED Bulbs','led-bulbs','💡','High brightness LED bulbs for headlights, fog lights and interiors.'],
   ['Halogen Bulbs','halogen-bulbs','🔆','Standard and upgraded halogen bulbs.'],
@@ -142,7 +164,8 @@ const seedCategories = [
 ];
 
 if (db.prepare('SELECT COUNT(*) as c FROM categories').get().c === 0) {
-  const ins = db.prepare('INSERT INTO categories (name, slug, image, description) VALUES (?, ?, ?, ?)');
+  // columns: name, slug, icon, description  (image stays NULL until admin uploads)
+  const ins = db.prepare('INSERT INTO categories (name, slug, icon, description) VALUES (?, ?, ?, ?)');
   db.transaction((rows) => { for (const r of rows) ins.run(...r); })(seedCategories);
 }
 
@@ -156,10 +179,26 @@ if (db.prepare('SELECT COUNT(*) as c FROM admins').get().c === 0) {
   }
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random()*1e9) + path.extname(file.originalname).toLowerCase())
-});
+// ---------- Multer: Cloudinary if configured, else local disk ----------
+const storage = useCloud
+  ? new CloudinaryStorage({
+      cloudinary,
+      params: (req, file) => {
+        let folder = 'misc';
+        if (req.path.includes('/products'))   folder = 'products';
+        else if (req.path.includes('/categories')) folder = 'categories';
+        else if (req.path.includes('/offers')) folder = 'offers';
+        return {
+          folder: `supreme-auto-parts/${folder}`,
+          allowed_formats: ['jpg','jpeg','png','webp','gif']
+        };
+      }
+    })
+  : multer.diskStorage({
+      destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+      filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random()*1e9) + path.extname(file.originalname).toLowerCase())
+    });
+
 const upload = multer({
   storage,
   limits: { fileSize: 8 * 1024 * 1024 },
@@ -169,36 +208,48 @@ const upload = multer({
   }
 });
 
+// Unified helper: get the final stored image URL from a request
+function imageUrlFrom(req, fallback = '') {
+  if (req.file) return useCloud ? req.file.path : '/uploads/' + req.file.filename;
+  return req.body.image || fallback;
+}
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'change-me',
   resave: false, saveUninitialized: false,
   cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax' }
 }));
 
-/* ===== settings api injected ===== */
-app.get("/api/settings", (req,res)=>{
-  const rows = require("better-sqlite3")(require("path").join(__dirname,"supreme.db"))
-    .prepare("SELECT key,value FROM settings").all();
-  const out = {}; rows.forEach(r=>out[r.key]=r.value);
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ---------- Settings API (uses the shared db connection) ----------
+app.get('/api/settings', (req, res) => {
+  const rows = db.prepare('SELECT key, value FROM settings').all();
+  const out = {};
+  rows.forEach(r => out[r.key] = r.value);
   res.json(out);
 });
-app.post("/api/admin/settings", (req,res)=>{
-  const db = require("better-sqlite3")(require("path").join(__dirname,"supreme.db"));
-  const up = db.prepare("INSERT INTO settings (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value");
+app.post('/api/admin/settings', (req, res) => {
+  const up = db.prepare('INSERT INTO settings (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value');
   const tx = db.transaction(obj => { for (const k in obj) up.run(k, String(obj[k] ?? '')); });
-  try { tx(req.body||{}); res.json({ok:true}); } catch(e){ res.status(500).json({error:e.message}); }
+  try { tx(req.body || {}); res.json({ ok: true }); } catch(e){ res.status(500).json({ error: e.message }); }
 });
-/* ===== end settings api ===== */
 
-app.use(express.static(path.join(__dirname, 'public')));
+// ---------- No-cache on all API routes (fixes "new product doesn't show") ----------
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  next();
+});
 
 const requireAdmin = (req, res, next) => {
   if (req.session && req.session.adminId) return next();
   res.status(401).json({ error: 'Unauthorized' });
 };
 
+// ---------- Public API ----------
 app.get('/api/categories', (req, res) =>
   res.json(db.prepare('SELECT * FROM categories ORDER BY name').all()));
 
@@ -213,7 +264,7 @@ app.get('/api/products', (req, res) => {
     const s = `%${search}%`; params.push(s, s, s, s, s, s);
   }
   if (universal === '1') { sql += ` AND p.universal = 1`; }
-  if (car_make) { sql += ` AND (p.car_make LIKE ? OR p.universal = 1)`; params.push(`%${car_make}%`); }
+  if (car_make)  { sql += ` AND (p.car_make  LIKE ? OR p.universal = 1)`; params.push(`%${car_make}%`); }
   if (car_model) { sql += ` AND (p.car_model LIKE ? OR p.universal = 1)`; params.push(`%${car_model}%`); }
   sql += ` ORDER BY p.created_at DESC`;
   res.json(db.prepare(sql).all(...params));
@@ -237,9 +288,10 @@ app.post('/api/orders', (req, res) => {
   const info = db.prepare(`INSERT INTO orders (customer_name, phone, email, location, items, total)
                            VALUES (?, ?, ?, ?, ?, ?)`)
     .run(customer_name, phone, email || '', location, JSON.stringify(items), total || 0);
-  res.json({ id: info.lastInsertRowid, message: 'Order received. Supreme Auto Parts will contact you shortly on WhatsApp.' });
+  res.json({ id: info.lastInsertRowid, message: 'Order received. Supreme Auto Parts will contact you shortly.' });
 });
 
+// ---------- Admin auth ----------
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5, LOCK_MS = 15*60*1000;
 
@@ -268,11 +320,11 @@ app.get('/api/admin/me', (req, res) => {
 app.get('/api/admin/orders', requireAdmin, (req, res) =>
   res.json(db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all()));
 
-/* ---------- PRODUCTS ---------- */
+// ---------- Products CRUD ----------
 app.post('/api/admin/products', requireAdmin, upload.single('image'), (req, res) => {
   const { name, category_id, brand, description, price, stock, universal, car_make, car_model, fits, sku } = req.body;
   if (!name) return res.status(400).json({ error: 'Name required' });
-  const image = req.file ? '/uploads/' + req.file.filename : (req.body.image || '');
+  const image = imageUrlFrom(req);
   const info = db.prepare(`INSERT INTO products
     (name, category_id, brand, description, price, stock, image, universal, car_make, car_model, fits, sku, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`)
@@ -280,13 +332,12 @@ app.post('/api/admin/products', requireAdmin, upload.single('image'), (req, res)
          image, universal === '1' ? 1 : 0, car_make || '', car_model || '', fits || '', sku || '');
   res.json({ id: info.lastInsertRowid, image });
 });
+
 app.put('/api/admin/products/:id', requireAdmin, upload.single('image'), (req, res) => {
   const { name, category_id, brand, description, price, stock, universal, car_make, car_model, fits, sku } = req.body;
   const ex = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
   if (!ex) return res.status(404).json({ error: 'Not found' });
-  let image = ex.image;
-  if (req.file) image = '/uploads/' + req.file.filename;
-  else if (req.body.image) image = req.body.image;
+  const image = imageUrlFrom(req, ex.image);
   db.prepare(`UPDATE products SET name=?, category_id=?, brand=?, description=?, price=?, stock=?,
               image=?, universal=?, car_make=?, car_model=?, fits=?, sku=?, updated_at=CURRENT_TIMESTAMP
               WHERE id=?`)
@@ -294,67 +345,80 @@ app.put('/api/admin/products/:id', requireAdmin, upload.single('image'), (req, r
          image, universal === '1' ? 1 : 0, car_make || '', car_model || '', fits || '', sku || '', req.params.id);
   res.json({ ok: true, image });
 });
+
 app.delete('/api/admin/products/:id', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM products WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
 });
 
-/* ---------- CATEGORIES (now with image upload) ---------- */
+// ---------- Categories CRUD (fixed the duplicate "image = ?" bug) ----------
 app.post('/api/admin/categories', requireAdmin, upload.single('image'), (req, res) => {
   const { name, slug, icon, description } = req.body;
   if (!name || !slug) return res.status(400).json({ error: 'Name and slug required' });
-  const image = req.file ? '/uploads/' + req.file.filename : (req.body.image || '');
+  const image = imageUrlFrom(req);
   try {
     const info = db.prepare('INSERT INTO categories (name, slug, icon, image, description) VALUES (?, ?, ?, ?, ?)')
       .run(name, slug, icon || '', image, description || '');
     res.json({ id: info.lastInsertRowid, image });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });
+
 app.put('/api/admin/categories/:id', requireAdmin, upload.single('image'), (req, res) => {
   const { name, slug, icon, description } = req.body;
   const ex = db.prepare('SELECT * FROM categories WHERE id = ?').get(req.params.id);
   if (!ex) return res.status(404).json({ error: 'Not found' });
-  let image = ex.image;
-  if (req.file) image = '/uploads/' + req.file.filename;
-  else if (req.body.image) image = req.body.image;
-  db.prepare('UPDATE categories SET name = ?, slug = ?, image = ?, image=?, description=? WHERE id=?')
+  const image = imageUrlFrom(req, ex.image);
+  db.prepare('UPDATE categories SET name = ?, slug = ?, icon = ?, image = ?, description = ? WHERE id = ?')
     .run(name, slug, icon || '', image, description || '', req.params.id);
   res.json({ ok: true, image });
 });
+
 app.delete('/api/admin/categories/:id', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM categories WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
 });
 
-/* ---------- OFFERS ---------- */
+// ---------- Offers CRUD ----------
 app.get('/api/admin/offers', requireAdmin, (req, res) =>
   res.json(db.prepare('SELECT * FROM offers ORDER BY created_at DESC').all()));
+
 app.post('/api/admin/offers', requireAdmin, upload.single('image'), (req, res) => {
   const { title, description, price, old_price, active } = req.body;
   if (!title) return res.status(400).json({ error: 'Title required' });
-  const image = req.file ? '/uploads/' + req.file.filename : (req.body.image || '');
+  const image = imageUrlFrom(req);
   const info = db.prepare(`INSERT INTO offers (title, description, price, old_price, image, active)
                            VALUES (?, ?, ?, ?, ?, ?)`)
     .run(title, description || '', price || 0, old_price || 0, image, active === '0' ? 0 : 1);
-  res.json({ id: info.lastInsertRowid });
+  res.json({ id: info.lastInsertRowid, image });
 });
+
 app.put('/api/admin/offers/:id', requireAdmin, upload.single('image'), (req, res) => {
   const { title, description, price, old_price, active } = req.body;
   const ex = db.prepare('SELECT * FROM offers WHERE id = ?').get(req.params.id);
   if (!ex) return res.status(404).json({ error: 'Not found' });
-  let image = ex.image;
-  if (req.file) image = '/uploads/' + req.file.filename;
-  else if (req.body.image) image = req.body.image;
+  const image = imageUrlFrom(req, ex.image);
   db.prepare(`UPDATE offers SET title=?, description=?, price=?, old_price=?, image=?, active=? WHERE id=?`)
     .run(title, description || '', price || 0, old_price || 0, image, active === '0' ? 0 : 1, req.params.id);
-  res.json({ ok: true });
+  res.json({ ok: true, image });
 });
+
 app.delete('/api/admin/offers/:id', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM offers WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
 });
 
-/* ---------- SECRET ADMIN ROUTE ---------- */
+// ---------- Health check ----------
+app.get('/api/_health', (req, res) => {
+  res.json({
+    products:   db.prepare('SELECT COUNT(*) as c FROM products').get().c,
+    categories: db.prepare('SELECT COUNT(*) as c FROM categories').get().c,
+    offers:     db.prepare('SELECT COUNT(*) as c FROM offers').get().c,
+    storage: useCloud ? 'cloudinary (persistent ✔)' : 'local-disk (EPHEMERAL — set Cloudinary env!)',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null
+  });
+});
+
+// ---------- Secret admin route ----------
 app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
   res.sendFile(path.join(__dirname, 'private', 'admin.html'));
 });
@@ -364,4 +428,5 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 app.listen(PORT, () => {
   console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
   console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
+  console.log(`Image storage: ${useCloud ? 'Cloudinary' : 'LOCAL DISK (not persistent!)'}`);
 });

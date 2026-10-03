@@ -1,4 +1,10 @@
 const API = '/api';
+const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">' +
+  '<rect width="100%" height="100%" fill="#1a1a1a"/>' +
+  '<text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS</text>' +
+  '</svg>'
+);
 let cart = JSON.parse(localStorage.getItem('supreme_cart') || '[]');
 const WHATSAPP = '25475992922';
 const EMAIL = 'info@supremeautoparts.co.ke';
