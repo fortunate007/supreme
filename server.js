@@ -29,7 +29,9 @@ const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-const db = new Database(path.join(__dirname, 'supreme.db'));
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'supreme.db');
+const db = new Database(DB_PATH);
+console.log('✔ Database:', DB_PATH);
 db.pragma('journal_mode = WAL');
 
 db.exec(`
