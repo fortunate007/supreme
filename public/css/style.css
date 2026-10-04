@@ -308,3 +308,18 @@ img{max-width:100%;display:block}
 .soc-link{display:inline-flex;width:36px;height:36px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;transition:.2s}
 .soc-link:hover{background:#c8102e;transform:translateY(-2px)}
 .soc-link svg{width:18px;height:18px}
+
+/* ===== Blue theme: top bar + footer ===== */
+header, .header, #header, .topbar, .top-bar, .navbar, .nav-bar, nav,
+footer, .footer, #footer, .site-footer {
+  background: #0b3a8f !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+footer, .footer, #footer, .site-footer { border-top: 3px solid #1d6bff !important; }
+header a, .header a, #header a, .topbar a, .navbar a, nav a,
+footer a, .footer a, #footer a, .site-footer a { color: #ffffff !important; }
+header a:hover, .navbar a:hover, nav a:hover,
+footer a:hover, .footer a:hover, #footer a:hover { color: #cfe3ff !important; }
+footer h1, footer h2, footer h3, footer h4,
+.footer h3, .footer h4, #footer h3, #footer h4 { color: #ffffff !important; }
