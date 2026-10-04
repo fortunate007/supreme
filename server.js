@@ -6,7 +6,7 @@ const fs = require('fs');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
-const Database = require('better-sqlite3');
+const { Pool } = require("pg");
 
 // ---------- Cloudinary (optional — falls back to local disk if not configured) ----------
 const cloudinary = require('cloudinary').v2;
@@ -30,7 +30,7 @@ const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'supreme.db');
-const db = new Database((() => { const fs = require("fs"), path = require("path"); let p = DB_PATH; try { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.accessSync(path.dirname(p), fs.constants.W_OK); } catch (e) { p = path.join(__dirname, "data", path.basename(p)); fs.mkdirSync(path.dirname(p), { recursive: true }); } return p; })());
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 console.log('✔ Database:', DB_PATH);
 db.pragma('journal_mode = WAL');
 
