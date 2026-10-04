@@ -30,7 +30,7 @@ const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'supreme.db');
-const db = new Database((() => { const p = DB_PATH; require("fs").mkdirSync(require("path").dirname(p), { recursive: true }); return p; })());
+const db = new Database((() => { const fs = require("fs"), path = require("path"); let p = DB_PATH; try { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.accessSync(path.dirname(p), fs.constants.W_OK); } catch (e) { p = path.join(__dirname, "data", path.basename(p)); fs.mkdirSync(path.dirname(p), { recursive: true }); } return p; })());
 console.log('✔ Database:', DB_PATH);
 db.pragma('journal_mode = WAL');
 
