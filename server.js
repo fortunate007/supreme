@@ -448,3 +448,5 @@ app.listen(PORT, () => {
   console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
   console.log(`Image storage: ${useCloud ? 'Cloudinary' : 'LOCAL DISK (not persistent!)'}`);
 });
+const DB_DIR = path.dirname(DB_PATH);
+if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
