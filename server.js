@@ -2,32 +2,21 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const { Pool } = require('pg');
 
-// ---------- Cloudinary (optional — falls back to local disk if not configured) ----------
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-const useCloud = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
-if (useCloud) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key:    process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-  });
-  console.log('✔ Cloudinary storage enabled');
-} else {
-  console.warn('⚠ Cloudinary env vars missing — using LOCAL disk storage (images will be lost on restart)');
-}
+// ---------- Supabase Storage (product / category / offer images) ----------
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
+const STORAGE_BUCKET = process.env.SUPABASE_BUCKET || 'products';
+const storageReady = !!(SUPABASE_URL && SUPABASE_SERVICE_KEY);
+if (storageReady) console.log('✔ Supabase Storage enabled (bucket: ' + STORAGE_BUCKET + ')');
+else console.warn('⚠ SUPABASE_URL / SUPABASE_SERVICE_KEY missing — image uploads will fail until they are set');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // ---------- Database (Supabase Postgres) ----------
 if (!process.env.DATABASE_URL) {
@@ -199,40 +188,22 @@ async function initDatabase() {
     }
   }
 
-  const adm = await one('SELECT COUNT(*)::int AS c FROM admins');
-  if (adm.c === 0) {
-    const u = process.env.ADMIN_USER, p = process.env.ADMIN_PASS;
-    if (u && p) {
-      await query('INSERT INTO admins (username, password) VALUES ($1, $2)', [u, bcrypt.hashSync(p, 12)]);
-      console.log('✔ Admin seeded from env');
-    } else {
-      console.warn('⚠ No ADMIN_USER / ADMIN_PASS set — no admin created.');
-    }
+  // Admin login comes from ADMIN_USER / ADMIN_PASS on every start (change them in Render, then redeploy)
+  const u = process.env.ADMIN_USER, p = process.env.ADMIN_PASS;
+  if (u && p) {
+    await query('DELETE FROM admins WHERE username <> $1', [u]);
+    await query(
+      'INSERT INTO admins (username, password) VALUES ($1, $2) ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password',
+      [u, bcrypt.hashSync(p, 12)]);
+    console.log('✔ Admin synced from env:', u);
+  } else {
+    console.warn('⚠ No ADMIN_USER / ADMIN_PASS set — admin login unchanged.');
   }
 }
 
-// ---------- Multer: Cloudinary if configured, else local disk ----------
-const storage = useCloud
-  ? new CloudinaryStorage({
-      cloudinary,
-      params: (req, file) => {
-        let folder = 'misc';
-        if (req.path.includes('/products'))   folder = 'products';
-        else if (req.path.includes('/categories')) folder = 'categories';
-        else if (req.path.includes('/offers')) folder = 'offers';
-        return {
-          folder: `supreme-auto-parts/${folder}`,
-          allowed_formats: ['jpg','jpeg','png','webp','gif']
-        };
-      }
-    })
-  : multer.diskStorage({
-      destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-      filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random()*1e9) + path.extname(file.originalname).toLowerCase())
-    });
-
+// ---------- Multer: keep the file in memory, then push it to Supabase Storage ----------
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (/^image\/(jpeg|png|jpg|webp|gif)$/i.test(file.mimetype)) cb(null, true);
@@ -240,11 +211,40 @@ const upload = multer({
   }
 });
 
-// Unified helper: get the final stored image URL from a request
+// Final stored image URL for a request
 function imageUrlFrom(req, fallback = '') {
-  if (req.file) return useCloud ? req.file.path : '/uploads/' + req.file.filename;
+  if (req.file && req.file.publicUrl) return req.file.publicUrl;
   return req.body.image || fallback;
 }
+
+// Uploads req.file to Supabase Storage and sets req.file.publicUrl
+async function storeImage(req, res, next) {
+  try {
+    if (!req.file) return next();
+    if (!storageReady) throw new Error('Image storage is not configured (set SUPABASE_URL and SUPABASE_SERVICE_KEY)');
+    let folder = 'misc';
+    if (req.path.includes('/products')) folder = 'products';
+    else if (req.path.includes('/categories')) folder = 'categories';
+    else if (req.path.includes('/offers')) folder = 'offers';
+    const ext = (path.extname(req.file.originalname) || '.jpg').toLowerCase();
+    const objectPath = `${folder}/${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${objectPath}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+        apikey: SUPABASE_SERVICE_KEY,
+        'Content-Type': req.file.mimetype,
+        'x-upsert': 'true'
+      },
+      body: req.file.buffer
+    });
+    if (!r.ok) throw new Error('Image upload failed: ' + (await r.text()));
+    req.file.publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${objectPath}`;
+    next();
+  } catch (e) { next(e); }
+}
+
+const uploadImage = [upload.single('image'), storeImage];
 
 app.set('trust proxy', 1); // Render sits behind a proxy (correct req.ip for login lockout)
 app.use(express.json({ limit: '10mb' }));
@@ -376,7 +376,7 @@ app.get('/api/admin/orders', requireAdmin, wrap(async (req, res) =>
   res.json(await all('SELECT * FROM orders ORDER BY created_at DESC'))));
 
 // ---------- Products CRUD ----------
-app.post('/api/admin/products', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.post('/api/admin/products', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { name, category_id, brand, description, price, stock, universal, car_make, car_model, fits, sku } = req.body;
   if (!name) return res.status(400).json({ error: 'Name required' });
   const image = imageUrlFrom(req);
@@ -390,7 +390,7 @@ app.post('/api/admin/products', requireAdmin, upload.single('image'), wrap(async
   res.json({ id: row.id, image });
 }));
 
-app.put('/api/admin/products/:id', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.put('/api/admin/products/:id', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { name, category_id, brand, description, price, stock, universal, car_make, car_model, fits, sku } = req.body;
   if (!/^\d+$/.test(req.params.id)) return res.status(404).json({ error: 'Not found' });
   const ex = await one('SELECT * FROM products WHERE id = $1', [req.params.id]);
@@ -411,7 +411,7 @@ app.delete('/api/admin/products/:id', requireAdmin, wrap(async (req, res) => {
 }));
 
 // ---------- Categories CRUD ----------
-app.post('/api/admin/categories', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.post('/api/admin/categories', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { name, slug, icon, description } = req.body;
   if (!name || !slug) return res.status(400).json({ error: 'Name and slug required' });
   const image = imageUrlFrom(req);
@@ -423,7 +423,7 @@ app.post('/api/admin/categories', requireAdmin, upload.single('image'), wrap(asy
   } catch (e) { res.status(400).json({ error: e.message }); }
 }));
 
-app.put('/api/admin/categories/:id', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.put('/api/admin/categories/:id', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { name, slug, icon, description } = req.body;
   if (!/^\d+$/.test(req.params.id)) return res.status(404).json({ error: 'Not found' });
   const ex = await one('SELECT * FROM categories WHERE id = $1', [req.params.id]);
@@ -446,7 +446,7 @@ app.delete('/api/admin/categories/:id', requireAdmin, wrap(async (req, res) => {
 app.get('/api/admin/offers', requireAdmin, wrap(async (req, res) =>
   res.json(await all('SELECT * FROM offers ORDER BY created_at DESC'))));
 
-app.post('/api/admin/offers', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.post('/api/admin/offers', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { title, description, price, old_price, active } = req.body;
   if (!title) return res.status(400).json({ error: 'Title required' });
   const image = imageUrlFrom(req);
@@ -457,7 +457,7 @@ app.post('/api/admin/offers', requireAdmin, upload.single('image'), wrap(async (
   res.json({ id: row.id, image });
 }));
 
-app.put('/api/admin/offers/:id', requireAdmin, upload.single('image'), wrap(async (req, res) => {
+app.put('/api/admin/offers/:id', requireAdmin, uploadImage, wrap(async (req, res) => {
   const { title, description, price, old_price, active } = req.body;
   if (!/^\d+$/.test(req.params.id)) return res.status(404).json({ error: 'Not found' });
   const ex = await one('SELECT * FROM offers WHERE id = $1', [req.params.id]);
@@ -486,8 +486,8 @@ app.get('/api/_health', wrap(async (req, res) => {
     categories: c.c,
     offers: o.c,
     database: 'supabase postgres (persistent ✔)',
-    storage: useCloud ? 'cloudinary (persistent ✔)' : 'local-disk (EPHEMERAL — set Cloudinary env!)',
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null
+    storage: storageReady ? 'supabase storage (persistent ✔)' : 'NOT CONFIGURED (set SUPABASE_URL and SUPABASE_SERVICE_KEY)',
+    bucket: STORAGE_BUCKET
   });
 }));
 
@@ -512,7 +512,7 @@ initDatabase()
     app.listen(PORT, () => {
       console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
       console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
-      console.log(`Image storage: ${useCloud ? 'Cloudinary' : 'LOCAL DISK (not persistent!)'}`);
+      console.log(`Image storage: ${storageReady ? 'Supabase Storage' : 'NOT CONFIGURED'}`);
     });
   })
   .catch((err) => {
