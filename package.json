@@ -4,18 +4,18 @@
   "description": "Supreme Auto Parts - East Africa auto parts and accessories",
   "main": "server.js",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.x"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
     "rebuild": "npm rebuild better-sqlite3 --build-from-source",
-    "postinstall": "npm rebuild better-sqlite3"
+    "postinstall": "npm rebuild better-sqlite3 --build-from-source"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.3.0",
-    "cloudinary": "^2.5.1",
+    "better-sqlite3": "^12.9.0",
+    "cloudinary": "^2.11.0",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
@@ -23,6 +23,6 @@
     "multer-storage-cloudinary": "^4.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.14"
   }
 }
