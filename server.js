@@ -30,7 +30,7 @@ const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'supreme.db');
-const db = new Database(DB_PATH);
+const db = new Database((() => { const p = DB_PATH; require("fs").mkdirSync(require("path").dirname(p), { recursive: true }); return p; })());
 console.log('✔ Database:', DB_PATH);
 db.pragma('journal_mode = WAL');
 
