@@ -76,7 +76,7 @@
   }
 
   function productImgUrl(p){
-    if (p.image) return '/uploads/products/' + p.image;
+    if (p.image) return (p.image.indexOf('http')===0 || p.image.charAt(0)==='/') ? p.image : '/uploads/products/' + p.image;
     if (p.img)   return p.img;
     return '/uploads/placeholder/placeholder.png';
   }
@@ -121,7 +121,7 @@
         return `
           <div class="product-card" data-id="${id}">
             <div class="pc-media"><img loading="lazy" alt="${name}" src="${productImgUrl(p)}"
-                 onerror="this.src='/uploads/placeholder/placeholder.png'"></div>
+                 onerror="this.onerror=null;this.src='/uploads/placeholder/placeholder.png'"></div>
             <div class="pc-body">
               <div class="pc-name">${name}</div>
               ${desc?`<p class="pc-desc">${desc}</p>`:''}
