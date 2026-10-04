@@ -8,7 +8,7 @@ const multer = require('multer');
 const { Pool } = require('pg');
 
 // ---------- Supabase Storage (product / category / offer images) ----------
-const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_URL = (() => { try { return new URL(process.env.SUPABASE_URL).origin; } catch (e) { return ''; } })();
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
 const STORAGE_BUCKET = process.env.SUPABASE_BUCKET || 'products';
 const storageReady = !!(SUPABASE_URL && SUPABASE_SERVICE_KEY);
