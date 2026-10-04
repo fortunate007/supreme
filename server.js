@@ -231,7 +231,6 @@ async function storeImage(req, res, next) {
     const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${objectPath}`, {
       method: 'POST',
       headers: Object.assign(
-        { apikey: SUPABASE_SERVICE_KEY, 'Content-Type': req.file.mimetype, 'x-upsert': 'true' },
         SUPABASE_SERVICE_KEY.startsWith('sb_') ? {} : { Authorization: 'Bearer ' + SUPABASE_SERVICE_KEY }
       ),
       body: req.file.buffer
