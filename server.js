@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+// [UI-PATCH] Non-fatal error handlers so app.listen still runs
+process.on('unhandledRejection', e => console.error('[non-fatal rejection]', e && e.message));
+process.on('uncaughtException',  e => console.error('[non-fatal exception]', e && e.message));
+
+
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
