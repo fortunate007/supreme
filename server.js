@@ -1,3 +1,6 @@
+// [STARTUP-GUARD] keep the process alive on non-fatal errors
+process.on('unhandledRejection', e => console.error('[non-fatal]', e && e.message || e));
+process.on('uncaughtException',  e => console.error('[non-fatal]', e && e.message || e));
 require('dotenv').config();
 
 // [UI-PATCH] Non-fatal error handlers so app.listen still runs
