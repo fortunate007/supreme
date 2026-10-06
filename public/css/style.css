@@ -449,3 +449,215 @@ input,select,textarea{
   gap:16px;
 }
 @media print{ .nav,.side-menu,.admin-link{ display:none !important; } }
+
+/* ===== QUICK ACTIONS PATCH ===== */
+/* Sticky header + prominent Cart & Admin buttons on every page */
+
+/* ---------- Sticky header ---------- */
+header.header,
+header {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 900 !important;
+  background: rgba(13,13,13,.94) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+  backdrop-filter: blur(14px) saturate(140%) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+  box-shadow: 0 4px 22px rgba(0,0,0,.35) !important;
+}
+
+.header-inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+}
+
+/* Nav sits on the right, items in a row */
+nav.nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-left: auto !important;
+  flex-wrap: wrap !important;
+}
+
+/* Base link */
+nav.nav a {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 9px 12px !important;
+  color: rgba(255,255,255,.85) !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+  transition: background .15s, color .15s, transform .15s !important;
+  line-height: 1.2 !important;
+}
+nav.nav a:hover {
+  background: rgba(255,255,255,.08) !important;
+  color: #fff !important;
+}
+
+/* Hide the hamburger on desktop */
+@media (min-width: 901px) {
+  #menu-btn, .menu-btn { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CART button — big, prominent, with badge
+   ═══════════════════════════════════════════════════════════ */
+nav.nav a[href="/cart.html"],
+nav.nav a[href*="cart"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 9px 16px !important;
+  background: linear-gradient(180deg, #1f1f1f, #141414) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25) !important;
+  transition: all .18s ease !important;
+}
+nav.nav a[href="/cart.html"]::before,
+nav.nav a[href*="cart"]::before {
+  content: "🛒";
+  font-size: 15px;
+  line-height: 1;
+  filter: saturate(0) brightness(2);
+}
+nav.nav a[href="/cart.html"]:hover,
+nav.nav a[href*="cart"]:hover {
+  background: linear-gradient(180deg, #262626, #1a1a1a) !important;
+  border-color: rgba(255,255,255,.32) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Cart count pill */
+#cart-count,
+.cart-count {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  padding: 0 7px !important;
+  background: #e11d2e !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  box-shadow: 0 0 0 3px rgba(225,29,46,.18) !important;
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+nav.nav a[href*="cart"]:hover #cart-count,
+nav.nav a[href*="cart"]:hover .cart-count {
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 0 4px rgba(225,29,46,.28) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ADMIN button — smaller than menu, still clearly visible
+   Sits at the END of the nav row (bottom of the menu list)
+   ═══════════════════════════════════════════════════════════ */
+nav.nav a[href*="admin"],
+nav.nav a.admin-link {
+  margin-left: 6px !important;
+  order: 9999 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 7px 12px !important;
+  background: transparent !important;
+  border: 1px solid rgba(225,29,46,.42) !important;
+  color: rgba(255,255,255,.72) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .8px !important;
+  text-transform: uppercase !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  transition: all .18s ease !important;
+}
+nav.nav a[href*="admin"]::before,
+nav.nav a.admin-link::before {
+  content: "⚙";
+  font-size: 12px;
+  line-height: 1;
+}
+nav.nav a[href*="admin"]:hover,
+nav.nav a.admin-link:hover {
+  background: #e11d2e !important;
+  border-color: #e11d2e !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(225,29,46,.35) !important;
+}
+nav.nav a[href*="admin"]:focus-visible,
+nav.nav a.admin-link:focus-visible {
+  outline: 2px solid #e11d2e !important;
+  outline-offset: 2px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Mobile: keep Cart + Admin visible at top even when the drawer
+   is closed. The other links can live in the side menu.
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  header.header,
+  header {
+    position: sticky !important;
+    top: 0 !important;
+  }
+  .header-inner {
+    flex-wrap: wrap !important;
+    row-gap: 8px !important;
+  }
+  /* Nav becomes a horizontal scrollable row of quick actions */
+  nav.nav {
+    order: 3 !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    padding-top: 8px !important;
+    margin-top: 6px !important;
+    border-top: 1px solid rgba(255,255,255,.06) !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  nav.nav::-webkit-scrollbar { display: none !important; }
+
+  /* Keep Cart + Admin first in view — scroll others off to the right */
+  nav.nav a[href*="cart"],
+  nav.nav a[href*="admin"] {
+    order: -1 !important;
+    flex: 0 0 auto !important;
+  }
+  nav.nav a:not([href*="cart"]):not([href*="admin"]) {
+    font-size: 14px !important;
+    padding: 8px 10px !important;
+    flex: 0 0 auto !important;
+  }
+}
+
+/* Small screens: shorten labels */
+@media (max-width: 520px) {
+  nav.nav a[href*="cart"] { padding: 8px 12px !important; font-size: 0 !important; }
+  nav.nav a[href*="cart"]::before { font-size: 16px !important; }
+  nav.nav a[href*="admin"] { padding: 7px 10px !important; font-size: 0 !important; }
+  nav.nav a[href*="admin"]::before { font-size: 14px !important; }
+}
+
+/* Print: hide quick actions */
+@media print {
+  nav.nav, .menu-btn { display: none !important; }
+  header { position: static !important; box-shadow: none !important; }
+}
