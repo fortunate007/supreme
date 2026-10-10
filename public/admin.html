@@ -171,4 +171,62 @@
 })();
 </script>
 
+<!-- LOGIN-GATE-V1 -->
+<script>
+(function () {
+  var loggedIn = false;
+  var origFetch = window.fetch;
+  var SEL = '[id*="settings" i],[class*="settings" i],[data-tab*="settings" i],[data-section*="settings" i],[data-target*="settings" i]';
+  function label(el) { return (el.textContent || '').replace(/[^\w\s]/g, '').trim(); }
+  function candidates() {
+    var list = Array.prototype.slice.call(document.querySelectorAll(SEL));
+    document.querySelectorAll('a,button,li,[role=tab],.tab,.nav-item').forEach(function (el) {
+      if (el.children.length <= 3 && /^(store\s+)?(settings|details|info)$/i.test(label(el))) list.push(el);
+    });
+    document.querySelectorAll('section,div,form,fieldset').forEach(function (el) {
+      var h = el.querySelector(':scope > h1,:scope > h2,:scope > h3,:scope > legend');
+      if (h && /^store\s+(settings|details|info)/i.test(label(h))) list.push(el);
+    });
+    return list;
+  }
+  function apply() {
+    var pw = document.querySelector('input[type=password]');
+    candidates().forEach(function (el) {
+      if (el === document.body || el === document.documentElement) return;
+      if (pw && el.contains(pw)) return;
+      if (!loggedIn) {
+        if (el.dataset.lg !== '1') {
+          el.dataset.lg = '1';
+          el.dataset.lgd = el.style.display;
+          el.style.setProperty('display', 'none', 'important');
+        }
+      } else if (el.dataset.lg === '1') {
+        el.style.removeProperty('display');
+        if (el.dataset.lgd) el.style.display = el.dataset.lgd;
+        delete el.dataset.lg;
+        delete el.dataset.lgd;
+      }
+    });
+  }
+  window.fetch = function (input, init) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    var p = origFetch.apply(this, arguments);
+    if (/\/api\/admin\/(login|logout)\b/.test(url)) {
+      p.then(function (res) {
+        if (res.ok) { loggedIn = /login/.test(url); apply(); }
+      }).catch(function () {});
+    }
+    return p;
+  };
+  document.addEventListener('DOMContentLoaded', function () {
+    apply();
+    new MutationObserver(apply).observe(document.body, { childList: true, subtree: true });
+    origFetch('/api/admin/me', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { loggedIn = !!(j && j.loggedIn); apply(); })
+      .catch(function () {});
+  });
+})();
+</script>
+
 </body></html>
