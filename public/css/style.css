@@ -472,3 +472,38 @@ nav.nav a[href*="admin"]:hover {
   nav.nav, .menu-btn, .side-menu { display: none !important; }
   header { position: static !important; }
 }
+
+/* ===== MENU-FIX-V2: white menu button on all screens + lighter blue home ===== */
+html body :is(header, .site-header, #header, .topbar, .navbar) {
+  background: #14479f !important;
+  background-image: none !important;
+}
+html body :is(.hero,#hero,.hero,.hero-badges) {
+  background: linear-gradient(135deg, #1d5bbf 0%, #3b82d6 55%, #5b9be8 100%) !important;
+  color: #ffffff !important;
+}
+html body :is(.hero,#hero,.hero,.hero-badges) :is(h1, p) { text-shadow: 0 2px 6px rgba(8, 30, 80, .45); }
+html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  transform: none !important;
+  left: auto !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  min-height: 46px;
+  padding: .4rem .7rem;
+  background: #ffffff !important;
+  color: #14479f !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1000;
+}
+html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) * { color: #14479f !important; }
+html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) svg { fill: #14479f !important; stroke: #14479f; }
+html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) :is(span:empty, i:empty, .bar, .line) { background: #14479f !important; }
