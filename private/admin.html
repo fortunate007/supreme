@@ -110,4 +110,44 @@
 </main>
 <footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Admin</div></div></footer>
 <script src="/js/admin.js"></script>
+<!-- ADMIN-TOAST-V1 -->
+<script>
+(function () {
+  var box;
+  function toast(msg, ok) {
+    if (!box) {
+      box = document.createElement('div');
+      box.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;max-width:340px;font:600 15px system-ui,sans-serif';
+      document.body.appendChild(box);
+    }
+    var t = document.createElement('div');
+    t.textContent = (ok ? '\u2713 ' : '\u2717 ') + msg;
+    t.style.cssText = 'padding:12px 16px;border-radius:8px;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.3);background:' + (ok ? '#16a34a' : '#dc2626');
+    box.appendChild(t);
+    setTimeout(function () { t.remove(); }, ok ? 2500 : 6000);
+  }
+  var orig = window.fetch;
+  window.fetch = function (input, init) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+    var watch = method !== 'GET' && url.indexOf('/api/admin/') !== -1 && !/\/(login|logout)\b/.test(url);
+    var p = orig.apply(this, arguments);
+    if (!watch) return p;
+    return p.then(function (res) {
+      if (res.ok) {
+        toast(method === 'DELETE' ? 'Deleted' : 'Saved', true);
+      } else {
+        res.clone().json().catch(function () { return {}; }).then(function (j) {
+          toast((j && j.error) ? j.error : 'Failed (' + res.status + ')', false);
+        });
+      }
+      return res;
+    }, function (err) {
+      toast('Network error: ' + err.message, false);
+      throw err;
+    });
+  };
+})();
+</script>
+
 </body></html>
