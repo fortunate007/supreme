@@ -507,3 +507,31 @@ html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#m
 html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) * { color: #14479f !important; }
 html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) svg { fill: #14479f !important; stroke: #14479f; }
 html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#menuBtn,#menu-toggle,#menuToggle,#hamburger,button[aria-label*="menu" i],.menu-btn,#menu-btn) :is(span:empty, i:empty, .bar, .line) { background: #14479f !important; }
+
+
+/* hero-rotator */
+.hero-rotator{display:grid;margin:.4rem 0 .8rem}
+.hero-slide{grid-area:1/1;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility .7s}
+.hero-slide.active{opacity:1;visibility:visible}
+.hero-slide .btn{display:inline-block;margin-top:.7rem}
+.hero-dots{display:flex;gap:.5rem;justify-content:center;margin:0 0 1rem}
+.hero-dots button{width:10px;height:10px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer}
+.hero-dots button.on{background:var(--gold);transform:scale(1.25)}
+.about-points{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+.about-points div{border:1px solid rgba(128,128,128,.35);border-radius:12px;padding:1rem;font-weight:600}
+.about-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1rem}
+
+
+/* hero-products */
+.hero-rotator{min-height:200px;align-items:center}
+.prod-slide{display:flex;gap:1.4rem;align-items:center;justify-content:center;text-align:left;padding:.4rem 0}
+.prod-img{flex:0 0 auto}
+.prod-img img{display:block;width:min(280px,42vw);height:190px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.1)}
+.prod-info{max-width:380px}
+.prod-cat{display:inline-block;font-size:.8rem;font-weight:700;opacity:.85;margin-bottom:.3rem}
+.prod-name{font-size:clamp(1.2rem,3vw,1.7rem);line-height:1.2;margin:0 0 .4rem}
+.prod-price{font-size:1.3rem;font-weight:800;color:var(--gold);margin:0 0 .6rem}
+@media(max-width:600px){.prod-slide{flex-direction:column;text-align:center}.prod-img img{width:70vw;height:160px}}
+
+/* menu-const: the menu button shows on every page and screen size */
+html body #menu-btn.menu-btn{display:inline-block !important}
