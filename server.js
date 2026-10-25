@@ -3,9 +3,6 @@ process.on('unhandledRejection', e => console.error('[non-fatal]', e && e.messag
 process.on('uncaughtException',  e => console.error('[non-fatal]', e && e.message || e));
 require('dotenv').config();
 
-// [UI-PATCH] Non-fatal error handlers so app.listen still runs
-process.on('unhandledRejection', e => console.error('[non-fatal rejection]', e && e.message));
-process.on('uncaughtException',  e => console.error('[non-fatal exception]', e && e.message));
 
 
 const express = require('express');
@@ -257,12 +254,12 @@ app.set('trust proxy', 1); // Render sits behind a proxy (correct req.ip for log
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'change-me',
+  secret: process.env.SESSION_SECRET || (process.env.NODE_ENV === 'production' ? (console.error('SESSION_SECRET is not set'), process.exit(1)) : 'dev-only-secret'),
   resave: false, saveUninitialized: false,
-  cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax' }
+  cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax', secure: 'auto' }
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'client')));
 
 // ---------- No-cache on all API routes (fixes "new product doesn't show") ----------
 app.use('/api', (req, res, next) => {
@@ -275,6 +272,9 @@ const requireAdmin = (req, res, next) => {
   if (req.session && req.session.adminId) return next();
   res.status(401).json({ error: 'Unauthorized' });
 };
+
+app.use('/api/admin', (req, res, next) =>
+  ['/login', '/logout', '/me'].includes(req.path) ? next() : requireAdmin(req, res, next));
 
 // ---------- Settings API ----------
 app.get('/api/settings', wrap(async (req, res) => {
@@ -498,13 +498,14 @@ app.get('/api/_health', wrap(async (req, res) => {
   });
 }));
 
-// ---------- Secret admin route ----------
-app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
-  res.sendFile(path.join(__dirname, 'private', 'admin.html'));
-});
+// ---------- Admin site (separate from the client site) ----------
+app.use('/admin', (req, res, next) => {
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  next();
+}, express.static(path.join(__dirname, 'admin'), { index: 'admin.html' }));
 
 // ---------- Catch-all (must stay last) ----------
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'index.html')));
 
 // ---------- Error handler ----------
 app.use((err, req, res, next) => {
@@ -518,7 +519,7 @@ initDatabase()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
-      console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
+      console.log(`Admin panel at http://localhost:${PORT}/admin`);
       console.log(`Image storage: ${storageReady ? 'Supabase Storage' : 'NOT CONFIGURED'}`);
     });
   })
