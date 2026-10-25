@@ -535,3 +535,18 @@ html body :is(.menu-btn,.menu-toggle,.hamburger,.burger,.nav-toggle,#menu-btn,#m
 
 /* menu-const: the menu button shows on every page and screen size */
 html body #menu-btn.menu-btn{display:inline-block !important}
+
+/* header-fixed2 */
+html,html body{overflow-x:clip !important}
+html body .header{position:sticky !important;top:0;z-index:900}
+html body .overlay{z-index:950}
+html body .side-menu{z-index:1000}
+html body #menu-btn.menu-btn{display:inline-block !important}
+@media(max-width:700px){
+  html body .header-inner{padding-top:.35rem;padding-bottom:.35rem}
+  html body .logo{font-size:1rem}
+  html body .menu-btn{font-size:1.1rem;padding:.1rem .5rem}
+}
+
+/* cat-img */
+html body .category-card .category-img{display:block;width:100%;aspect-ratio:4/3;height:auto;object-fit:cover;background:rgba(128,128,128,.12)}

@@ -1,5 +1,8 @@
 (function(){
   let SETTINGS = {};
+  const PATH = (location.pathname.replace(/\/+$/, '') || '/');
+  const WHY_OK  = PATH === '/' || /\/index(\.html)?$/.test(PATH);
+  const SHOP_OK = false;
   const WA_FALLBACK = '254700000000';
   const q  = (s,c)=> (c||document).querySelector(s);
   const qa = (s,c)=> Array.from((c||document).querySelectorAll(s));
@@ -25,7 +28,7 @@
     {e:'⭐', t:'Trusted by Drivers',             d:'Years of service to drivers across Kenya — genuine parts, honest advice.'}
   ];
 
-  function renderWhy(){
+  function renderWhy(){ if (!WHY_OK) return;
     let target = null;
     qa('h1,h2,h3,h4').forEach(h=>{
       if (/why\s*(supreme|us|choose)/i.test(h.textContent||'')){
@@ -94,7 +97,7 @@
     return [];
   }
 
-  async function renderShop(){
+  async function renderShop(){ if (!SHOP_OK) return;
     const host = findShopHost();
     if (!host || host.dataset.shopRendered === '1') return;
     host.dataset.shopRendered = '1';

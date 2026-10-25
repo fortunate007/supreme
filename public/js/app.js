@@ -28,9 +28,9 @@ async function api(url, options={}){
 }
 
 function categoryCard(c){
-  const inner = c.image
-    ? `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`
-    : `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`;
+  const raw = c.image || '';
+  const src = raw ? ((/^(https?:)?\/\//.test(raw) || raw.charAt(0) === '/') ? raw : '/uploads/categories/' + raw) : '/uploads/placeholder/placeholder.png';
+  const inner = `<img class="category-img" src="${src}" alt="${c.name || 'category'}" loading="lazy" onerror="this.onerror=null;this.src='/uploads/placeholder/placeholder.png'">`;
   return `<a class="category-card" href="/products.html?category=${c.slug}">${inner}<div class="cat-body"><h3>${c.name}</h3><p>${c.description||''}</p></div></a>`;
 }
 
