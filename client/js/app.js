@@ -127,3 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => q.parentElement.classList.toggle('open')));
 });
+
+/* ---- Heading updates instantly (no "All Products" flash) ---- */
+(function () {
+  const orig = loadProductsPage;
+  function titleNow() {
+    const t = document.getElementById('products-title'); if (!t) return;
+    const p = new URLSearchParams(location.search), c = p.get('category'), s = p.get('search');
+    t.textContent = c ? c.replace(/-/g, ' ').toUpperCase() : s ? 'Search: ' + s : p.get('universal') ? 'UNIVERSAL PARTS' : 'All Products';
+  }
+  loadProductsPage = function () {
+    titleNow();
+    const g = document.getElementById('products-grid');
+    if (g) g.innerHTML = '<p>Loading…</p>';
+    return Promise.resolve(orig.apply(this, arguments)).then(titleNow);
+  };
+})();

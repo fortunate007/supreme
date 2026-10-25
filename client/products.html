@@ -7,8 +7,9 @@
 </head>
 <body>
 <main class="container section">
-  <h1 id="products-title">All Products</h1>
-  <div id="products-grid" class="product-grid"></div>
+  <h1 id="products-title"></h1>
+<script data-title-init>(function(){var p=new URLSearchParams(location.search),c=p.get("category"),s=p.get("search");document.getElementById("products-title").textContent=c?c.replace(/-/g," ").toUpperCase():s?"Search: "+s:p.get("universal")?"UNIVERSAL PARTS":"All Products";})();</script>
+  <div id="products-grid" class="product-grid"><p>Loading…</p></div>
 </main>
 <script src="/js/layout.js"></script>
 <script src="/js/app.js"></script>
