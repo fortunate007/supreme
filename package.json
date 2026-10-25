@@ -4,7 +4,7 @@
   "description": "Supreme Auto Parts - East Africa auto parts and accessories",
   "main": "server.js",
   "engines": {
-    "node": "22.x"
+    "node": ">=18"
   },
   "scripts": {
     "start": "node server.js",
