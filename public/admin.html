@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Supreme Auto Parts</title><link rel="stylesheet" href="/css/style.css?v=1791657314"></head>
+<body>
+<header class="header"><div class="container header-inner">
+  <a href="/" class="logo">SUPREME <span>AUTO PARTS</span></a>
+  <nav class="nav"><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a><a href="/faqs.html">FAQs</a><a href="/contact.html">Contact</a></nav>
+</div></header>
+<main class="container section">
+  <div id="login-section" style="max-width:400px">
+    <h1>Admin Login</h1>
+    <form id="login-form" class="admin-form" style="margin-top:1rem">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="btn" type="submit">Login</button>
+    </form>
+  </div>
+  <div id="dashboard-section" style="display:none">
+    <div class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <span>Welcome, <strong id="admin-name"></strong></span>
+      <button id="logout-btn" class="btn danger">Logout</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button data-tab="products" class="active">📦 Products</button>
+      <button data-tab="offers">🔥 Offers</button>
+      <button data-tab="categories">🗂️ Categories</button>
+      <button data-tab="orders">🛒 Orders</button>
+    </div>
+
+    <div id="tab-products" class="admin-tab-panel">
+      <section class="admin-card">
+        <h2>Add / Update Product</h2>
+        <p style="color:#666;margin-bottom:.8rem">Fill in description and price, the template requires both for clear listings.</p>
+        <form id="product-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Product Name *" required>
+          <select name="category_id" id="prod-category"></select>
+          <input type="text" name="brand" placeholder="Brand">
+          <textarea name="description" placeholder="Description (required for customers to understand the product)" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Price (KSh) *" step="0.01" required>
+          <input type="number" name="stock" placeholder="Stock quantity">
+          <input type="file" name="image" accept="image/*">
+          <input type="text" name="image" placeholder="Or Image URL">
+          <label><input type="checkbox" name="universal" value="1"> Universal fit</label>
+          <input type="text" name="car_make" placeholder="Car make (e.g. Toyota, Nissan)">
+          <input type="text" name="car_model" placeholder="Car model (e.g. Hilux, Note)">
+          <input type="text" name="fits" placeholder="Other fits info">
+          <input type="text" name="sku" placeholder="SKU">
+          <button class="btn" type="submit">Save Product</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Products</h2><table id="products-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-offers" class="admin-tab-panel" style="display:none">
+      <section class="admin-card">
+        <h2>Add / Update Offer</h2>
+        <p style="color:#666;margin-bottom:.8rem">Offer template requires a description and price. Set old price to show a discount.</p>
+        <form id="offer-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="title" placeholder="Offer Title *" required>
+          <textarea name="description" placeholder="Description (what the offer is about) *" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Offer Price (KSh) *" step="0.01" required>
+          <input type="number" name="old_price" placeholder="Old Price (KSh) - optional" step="0.01">
+          <input type="file" name="image" accept="image/*">
+          <input type="text" name="image" placeholder="Or Image URL">
+          <label><input type="checkbox" name="active" value="1" checked> Active (visible on site)</label>
+          <button class="btn" type="submit">Save Offer</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Offers</h2><table id="offers-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-categories" class="admin-tab-panel" style="display:none">
+      <section class="admin-card">
+        <h2>Add Category</h2>
+        <form id="category-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Category Name *" required>
+          <input type="text" name="slug" placeholder="Slug (e.g. led-bulbs) *" required>
+          <input type="file" name="image" accept="image/*" class="form-input">
+          <textarea name="description" placeholder="Description"></textarea>
+          <button class="btn" type="submit">Add Category</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Categories</h2><table id="categories-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-orders" class="admin-tab-panel" style="display:none">
+      <section class="admin-card"><h2>Customer Orders</h2><table id="orders-table" class="admin-table"></table></section>
+    </div>
+  </div>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Admin Panel</div></div></footer>
+<script src="/js/admin.js"></script>
+<script src="/js/site-info.js" defer></script>
+
+<section id="settings-panel" style="max-width:900px;margin:2rem auto;padding:1.5rem;border:1px solid #eee;border-radius:10px;background:#fff">
+  <h2>Store Settings</h2>
+  <p style="color:#666;font-size:.9rem">Editable contact + social info shown on the whole site.</p>
+  <form id="settings-form" style="display:grid;gap:.75rem">
+    <label>Business Name<input name="business_name" class="form-input" style="width:100%"></label>
+    <label>Address<input name="address" class="form-input" style="width:100%"></label>
+    <label>Google Maps URL<input name="maps_url" class="form-input" style="width:100%" placeholder="https://www.google.com/maps/search/?api=1&query=Kirinyaga+Road+Nairobi"></label>
+    <label>Phone<input name="phone" class="form-input" style="width:100%"></label>
+    <label>WhatsApp<input name="whatsapp" class="form-input" style="width:100%"></label>
+    <label>Email<input name="email" class="form-input" style="width:100%"></label>
+    <label>Hours<input name="hours" class="form-input" style="width:100%"></label>
+    <label>Facebook URL<input name="facebook" class="form-input" style="width:100%"></label>
+    <label>Instagram URL<input name="instagram" class="form-input" style="width:100%"></label>
+    <label>X / Twitter URL<input name="twitter" class="form-input" style="width:100%"></label>
+    <label>TikTok URL<input name="tiktok" class="form-input" style="width:100%"></label>
+    <label>YouTube URL<input name="youtube" class="form-input" style="width:100%"></label>
+    <label>LinkedIn URL<input name="linkedin" class="form-input" style="width:100%"></label>
+    <button type="submit" style="background:#c8102e;color:#fff;padding:.75rem;border:0;border-radius:8px;cursor:pointer">Save Settings</button>
+    <span id="settings-msg" style="color:green;display:none">Saved ✔</span>
+  </form>
+</section>
+<script>
+(async()=>{
+  const f=document.getElementById("settings-form"), msg=document.getElementById("settings-msg");
+  try{ const s=await (await fetch("/api/settings")).json(); for(const k in s){ if(f.elements[k]) f.elements[k].value=s[k]; } }catch(e){}
+  f.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const data=Object.fromEntries(new FormData(f).entries());
+    const r=await fetch("/api/admin/settings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+    if(r.ok){ msg.style.display="inline"; setTimeout(()=>msg.style.display="none",2000); sessionStorage.removeItem("supreme_settings_v1"); }
+    else alert("Save failed");
+  });
+})();
+</script>
+<script src="/js/shop-enhance.js" defer></script>
+<script src="/js/dedupe-header.js?v=1"></script>  <script src="/js/quick-actions.js" defer></script>
+<!-- ADMIN-TOAST-V1 -->
+<script>
+(function () {
+  var box;
+  function toast(msg, ok) {
+    if (!box) {
+      box = document.createElement('div');
+      box.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;max-width:340px;font:600 15px system-ui,sans-serif';
+      document.body.appendChild(box);
+    }
+    var t = document.createElement('div');
+    t.textContent = (ok ? '\u2713 ' : '\u2717 ') + msg;
+    t.style.cssText = 'padding:12px 16px;border-radius:8px;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.3);background:' + (ok ? '#16a34a' : '#dc2626');
+    box.appendChild(t);
+    setTimeout(function () { t.remove(); }, ok ? 2500 : 6000);
+  }
+  var orig = window.fetch;
+  window.fetch = function (input, init) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+    var watch = method !== 'GET' && url.indexOf('/api/admin/') !== -1 && !/\/(login|logout)\b/.test(url);
+    var p = orig.apply(this, arguments);
+    if (!watch) return p;
+    return p.then(function (res) {
+      if (res.ok) {
+        toast(method === 'DELETE' ? 'Deleted' : 'Saved', true);
+      } else {
+        res.clone().json().catch(function () { return {}; }).then(function (j) {
+          toast((j && j.error) ? j.error : 'Failed (' + res.status + ')', false);
+        });
+      }
+      return res;
+    }, function (err) {
+      toast('Network error: ' + err.message, false);
+      throw err;
+    });
+  };
+})();
+</script>
+
+<!-- LOGIN-GATE-V1 -->
+<script>
+(function () {
+  var loggedIn = false;
+  var origFetch = window.fetch;
+  var SEL = '[id*="settings" i],[class*="settings" i],[data-tab*="settings" i],[data-section*="settings" i],[data-target*="settings" i]';
+  function label(el) { return (el.textContent || '').replace(/[^\w\s]/g, '').trim(); }
+  function candidates() {
+    var list = Array.prototype.slice.call(document.querySelectorAll(SEL));
+    document.querySelectorAll('a,button,li,[role=tab],.tab,.nav-item').forEach(function (el) {
+      if (el.children.length <= 3 && /^(store\s+)?(settings|details|info)$/i.test(label(el))) list.push(el);
+    });
+    document.querySelectorAll('section,div,form,fieldset').forEach(function (el) {
+      var h = el.querySelector(':scope > h1,:scope > h2,:scope > h3,:scope > legend');
+      if (h && /^store\s+(settings|details|info)/i.test(label(h))) list.push(el);
+    });
+    return list;
+  }
+  function apply() {
+    var pw = document.querySelector('input[type=password]');
+    candidates().forEach(function (el) {
+      if (el === document.body || el === document.documentElement) return;
+      if (pw && el.contains(pw)) return;
+      if (!loggedIn) {
+        if (el.dataset.lg !== '1') {
+          el.dataset.lg = '1';
+          el.dataset.lgd = el.style.display;
+          el.style.setProperty('display', 'none', 'important');
+        }
+      } else if (el.dataset.lg === '1') {
+        el.style.removeProperty('display');
+        if (el.dataset.lgd) el.style.display = el.dataset.lgd;
+        delete el.dataset.lg;
+        delete el.dataset.lgd;
+      }
+    });
+  }
+  window.fetch = function (input, init) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    var p = origFetch.apply(this, arguments);
+    if (/\/api\/admin\/(login|logout)\b/.test(url)) {
+      p.then(function (res) {
+        if (res.ok) { loggedIn = /login/.test(url); apply(); }
+      }).catch(function () {});
+    }
+    return p;
+  };
+  document.addEventListener('DOMContentLoaded', function () {
+    apply();
+    new MutationObserver(apply).observe(document.body, { childList: true, subtree: true });
+    origFetch('/api/admin/me', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { loggedIn = !!(j && j.loggedIn); apply(); })
+      .catch(function () {});
+  });
+})();
+</script>
+
+</body></html>

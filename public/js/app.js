@@ -28,10 +28,10 @@ async function api(url, options={}){
 }
 
 function categoryCard(c){
-  const src = !c.image ? PLACEHOLDER_IMG
-            : /^https?:/.test(c.image) ? c.image
-            : '/uploads/categories/' + c.image;
-  return `<a class="category-card" href="/products.html?category=${c.slug}"><img class="category-img" src="${src}" alt="${c.name || 'category'}" loading="lazy"><div class="cat-body"><h3>${c.name}</h3><p>${c.description||''}</p></div></a>`;
+  const inner = c.image
+    ? `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`
+    : `<img class="category-img" src="/uploads/categories/${c.image || 'placeholder/placeholder.png'}" alt="${c.name || 'category'}" loading="lazy">`;
+  return `<a class="category-card" href="/products.html?category=${c.slug}">${inner}<div class="cat-body"><h3>${c.name}</h3><p>${c.description||''}</p></div></a>`;
 }
 
 async function loadCategories(){
@@ -126,20 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
     location.href = '/products.html?' + q.toString();
   });
   document.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => q.parentElement.classList.toggle('open')));
+  // Hidden admin shortcut: Ctrl + Shift + A
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+      window.location.href = '/supreme-control-9x7k';
+    }
+  });
 });
-
-/* ---- Heading updates instantly (no "All Products" flash) ---- */
-(function () {
-  const orig = loadProductsPage;
-  function titleNow() {
-    const t = document.getElementById('products-title'); if (!t) return;
-    const p = new URLSearchParams(location.search), c = p.get('category'), s = p.get('search');
-    t.textContent = c ? c.replace(/-/g, ' ').toUpperCase() : s ? 'Search: ' + s : p.get('universal') ? 'UNIVERSAL PARTS' : 'All Products';
-  }
-  loadProductsPage = function () {
-    titleNow();
-    const g = document.getElementById('products-grid');
-    if (g) g.innerHTML = '<p>Loading…</p>';
-    return Promise.resolve(orig.apply(this, arguments)).then(titleNow);
-  };
-})();

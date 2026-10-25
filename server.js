@@ -3,6 +3,9 @@ process.on('unhandledRejection', e => console.error('[non-fatal]', e && e.messag
 process.on('uncaughtException',  e => console.error('[non-fatal]', e && e.message || e));
 require('dotenv').config();
 
+// [UI-PATCH] Non-fatal error handlers so app.listen still runs
+process.on('unhandledRejection', e => console.error('[non-fatal rejection]', e && e.message));
+process.on('uncaughtException',  e => console.error('[non-fatal exception]', e && e.message));
 
 
 const express = require('express');
@@ -85,17 +88,6 @@ CREATE TABLE IF NOT EXISTS orders (
   items TEXT NOT NULL,
   total DOUBLE PRECISION DEFAULT 0,
   status TEXT DEFAULT 'pending',
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-CREATE TABLE IF NOT EXISTS inquiries (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  email TEXT,
-  subject TEXT,
-  timeline TEXT,
-  message TEXT NOT NULL,
-  status TEXT DEFAULT 'new',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS admins (
@@ -211,7 +203,7 @@ async function initDatabase() {
     await query(
       'INSERT INTO admins (username, password) VALUES ($1, $2) ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password',
       [u, bcrypt.hashSync(p, 12)]);
-    console.log('✔ Admin account synced from env');
+    console.log('✔ Admin synced from env:', u);
   } else {
     console.warn('⚠ No ADMIN_USER / ADMIN_PASS set — admin login unchanged.');
   }
@@ -265,12 +257,12 @@ app.set('trust proxy', 1); // Render sits behind a proxy (correct req.ip for log
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || (process.env.NODE_ENV === 'production' ? (console.error('SESSION_SECRET is not set'), process.exit(1)) : 'dev-only-secret'),
+  secret: process.env.SESSION_SECRET || 'change-me',
   resave: false, saveUninitialized: false,
-  cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax', secure: 'auto' }
+  cookie: { maxAge: 1000*60*60*8, httpOnly: true, sameSite: 'lax' }
 }));
 
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------- No-cache on all API routes (fixes "new product doesn't show") ----------
 app.use('/api', (req, res, next) => {
@@ -283,9 +275,6 @@ const requireAdmin = (req, res, next) => {
   if (req.session && req.session.adminId) return next();
   res.status(401).json({ error: 'Unauthorized' });
 };
-
-app.use('/api/admin', (req, res, next) =>
-  ['/login', '/logout', '/me'].includes(req.path) ? next() : requireAdmin(req, res, next));
 
 // ---------- Settings API ----------
 app.get('/api/settings', wrap(async (req, res) => {
@@ -360,27 +349,6 @@ app.post('/api/orders', wrap(async (req, res) => {
     [customer_name, phone, email || '', location, JSON.stringify(items), total || 0]);
   res.json({ id: row.id, message: 'Order received. Supreme Auto Parts will contact you shortly.' });
 }));
-
-// ---------- Inquiries ----------
-const inquiryHits = new Map();
-app.post('/api/inquiries', wrap(async (req, res) => {
-  if (req.body.website) return res.json({ ok: true }); // honeypot
-  const now = Date.now();
-  const hits = (inquiryHits.get(req.ip) || []).filter(t => now - t < 60 * 60 * 1000);
-  if (hits.length >= 5) return res.status(429).json({ error: 'Too many inquiries. Please try again later.' });
-  const clip = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
-  const name = clip(req.body.name, 100), phone = clip(req.body.phone, 30), email = clip(req.body.email, 120);
-  const subject = clip(req.body.subject, 60), timeline = clip(req.body.timeline, 60), message = clip(req.body.message, 2000);
-  if (!name || !phone || !message) return res.status(400).json({ error: 'Name, phone and message are required' });
-  hits.push(now); inquiryHits.set(req.ip, hits);
-  const row = await one(
-    'INSERT INTO inquiries (name, phone, email, subject, timeline, message) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
-    [name, phone, email, subject, timeline, message]);
-  res.json({ ok: true, id: row.id });
-}));
-
-app.get('/api/admin/inquiries', requireAdmin, wrap(async (req, res) =>
-  res.json(await all('SELECT * FROM inquiries ORDER BY created_at DESC'))));
 
 // ---------- Admin auth ----------
 const loginAttempts = new Map();
@@ -530,14 +498,13 @@ app.get('/api/_health', wrap(async (req, res) => {
   });
 }));
 
-// ---------- Admin site (separate from the client site) ----------
-app.use('/admin', (req, res, next) => {
-  res.set('X-Robots-Tag', 'noindex, nofollow');
-  next();
-}, express.static(path.join(__dirname, 'admin'), { index: 'admin.html' }));
+// ---------- Secret admin route ----------
+app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
+  res.sendFile(path.join(__dirname, 'private', 'admin.html'));
+});
 
 // ---------- Catch-all (must stay last) ----------
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'client', 'index.html')));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 // ---------- Error handler ----------
 app.use((err, req, res, next) => {
@@ -551,7 +518,7 @@ initDatabase()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
-      console.log(`Admin panel at http://localhost:${PORT}/admin`);
+      console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
       console.log(`Image storage: ${storageReady ? 'Supabase Storage' : 'NOT CONFIGURED'}`);
     });
   })

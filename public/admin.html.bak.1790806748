@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Supreme Auto Parts</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<header class="header"><div class="container header-inner">
+  <a href="/" class="logo">SUPREME <span>AUTO PARTS</span></a>
+  <nav class="nav"><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a><a href="/faqs.html">FAQs</a><a href="/contact.html">Contact</a></nav>
+</div></header>
+<main class="container section">
+  <div id="login-section" style="max-width:400px">
+    <h1>Admin Login</h1>
+    <form id="login-form" class="admin-form" style="margin-top:1rem">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <p style="margin-top:1rem;color:#666">Default credentials: <strong>admin / supreme123</strong></p>
+  </div>
+  <div id="dashboard-section" style="display:none">
+    <div class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <span>Welcome, <strong id="admin-name"></strong></span>
+      <button id="logout-btn" class="btn danger">Logout</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button data-tab="products" class="active">📦 Products</button>
+      <button data-tab="offers">🔥 Offers</button>
+      <button data-tab="categories">🗂️ Categories</button>
+      <button data-tab="orders">🛒 Orders</button>
+    </div>
+
+    <div id="tab-products" class="admin-tab-panel">
+      <section class="admin-card">
+        <h2>Add / Update Product</h2>
+        <p style="color:#666;margin-bottom:.8rem">Fill in description and price — the template requires both for clear listings.</p>
+        <form id="product-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Product Name *" required>
+          <select name="category_id" id="prod-category"></select>
+          <input type="text" name="brand" placeholder="Brand">
+          <textarea name="description" placeholder="Description (required for customers to understand the product)" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Price (KSh) *" step="0.01" required>
+          <input type="number" name="stock" placeholder="Stock quantity">
+          <input type="file" name="image" accept="image/*">
+          <input type="text" name="image" placeholder="Or Image URL">
+          <label><input type="checkbox" name="universal" value="1"> Universal fit</label>
+          <input type="text" name="car_make" placeholder="Car make (e.g. Toyota, Nissan)">
+          <input type="text" name="car_model" placeholder="Car model (e.g. Hilux, Note)">
+          <input type="text" name="fits" placeholder="Other fits info">
+          <input type="text" name="sku" placeholder="SKU">
+          <button class="btn" type="submit">Save Product</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Products</h2><table id="products-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-offers" class="admin-tab-panel" style="display:none">
+      <section class="admin-card">
+        <h2>Add / Update Offer</h2>
+        <p style="color:#666;margin-bottom:.8rem">Offer template requires a description and price. Set old price to show a discount.</p>
+        <form id="offer-form" class="admin-form" enctype="multipart/form-data">
+          <input type="text" name="title" placeholder="Offer Title *" required>
+          <textarea name="description" placeholder="Description (what the offer is about) *" rows="3" required></textarea>
+          <input type="number" name="price" placeholder="Offer Price (KSh) *" step="0.01" required>
+          <input type="number" name="old_price" placeholder="Old Price (KSh) - optional" step="0.01">
+          <input type="file" name="image" accept="image/*">
+          <input type="text" name="image" placeholder="Or Image URL">
+          <label><input type="checkbox" name="active" value="1" checked> Active (visible on site)</label>
+          <button class="btn" type="submit">Save Offer</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Offers</h2><table id="offers-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-categories" class="admin-tab-panel" style="display:none">
+      <section class="admin-card">
+        <h2>Add Category</h2>
+        <form id="category-form" class="admin-form">
+          <input type="text" name="name" placeholder="Category Name *" required>
+          <input type="text" name="slug" placeholder="Slug (e.g. led-bulbs) *" required>
+          <input type="text" name="icon" placeholder="Icon (emoji)">
+          <textarea name="description" placeholder="Description"></textarea>
+          <button class="btn" type="submit">Add Category</button>
+        </form>
+      </section>
+      <section class="admin-card"><h2>All Categories</h2><table id="categories-table" class="admin-table"></table></section>
+    </div>
+
+    <div id="tab-orders" class="admin-tab-panel" style="display:none">
+      <section class="admin-card"><h2>Customer Orders</h2><table id="orders-table" class="admin-table"></table></section>
+    </div>
+  </div>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom">© 2025 Supreme Auto Parts | Admin Panel</div></div></footer>
+<script src="/js/admin.js"></script>
+</body></html>
