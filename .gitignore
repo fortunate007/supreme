@@ -4,3 +4,4 @@ node_modules
 supreme.db*
 server.log
 repo.bundle
+products.csv
