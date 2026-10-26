@@ -90,6 +90,17 @@ CREATE TABLE IF NOT EXISTS orders (
   status TEXT DEFAULT 'pending',
   created_at TIMESTAMPTZ DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS inquiries (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT,
+  subject TEXT,
+  timeline TEXT,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'new',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
 CREATE TABLE IF NOT EXISTS admins (
   id SERIAL PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
@@ -349,6 +360,27 @@ app.post('/api/orders', wrap(async (req, res) => {
     [customer_name, phone, email || '', location, JSON.stringify(items), total || 0]);
   res.json({ id: row.id, message: 'Order received. Supreme Auto Parts will contact you shortly.' });
 }));
+
+// ---------- Inquiries ----------
+const inquiryHits = new Map();
+app.post('/api/inquiries', wrap(async (req, res) => {
+  if (req.body.website) return res.json({ ok: true }); // honeypot
+  const now = Date.now();
+  const hits = (inquiryHits.get(req.ip) || []).filter(t => now - t < 60 * 60 * 1000);
+  if (hits.length >= 5) return res.status(429).json({ error: 'Too many inquiries. Please try again later.' });
+  const clip = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+  const name = clip(req.body.name, 100), phone = clip(req.body.phone, 30), email = clip(req.body.email, 120);
+  const subject = clip(req.body.subject, 60), timeline = clip(req.body.timeline, 60), message = clip(req.body.message, 2000);
+  if (!name || !phone || !message) return res.status(400).json({ error: 'Name, phone and message are required' });
+  hits.push(now); inquiryHits.set(req.ip, hits);
+  const row = await one(
+    'INSERT INTO inquiries (name, phone, email, subject, timeline, message) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
+    [name, phone, email, subject, timeline, message]);
+  res.json({ ok: true, id: row.id });
+}));
+
+app.get('/api/admin/inquiries', requireAdmin, wrap(async (req, res) =>
+  res.json(await all('SELECT * FROM inquiries ORDER BY created_at DESC'))));
 
 // ---------- Admin auth ----------
 const loginAttempts = new Map();
