@@ -7,7 +7,7 @@ const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
 );
 let cart = JSON.parse(localStorage.getItem('supreme_cart') || '[]');
 const WHATSAPP = '254759929222';
-const EMAIL = 'info@supremeautoparts.co.ke';
+const EMAIL = 'info@supremeaccessories.com';
 
 const money = n => 'KSh ' + Number(n || 0).toLocaleString();
 const waLink = msg => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;

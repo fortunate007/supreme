@@ -1,7 +1,7 @@
 /* Supreme shared layout (Zen-style). Replaces each page's old banner, header, drawer, WhatsApp button and footer. */
 (function () {
   var WA = '254759929222', WA_TXT = '+254 759 929 222';
-  var EMAIL = 'info@supremeautoparts.co.ke';
+  var EMAIL = 'info@supremeaccessories.com';
   var ADDR = 'Kirinyaga Road, next to Kingdom Bank, Nairobi';
   var path = location.pathname.replace(/index\.html$/, '');
   function cur(h) { return path === h ? ' aria-current="page"' : ''; }
