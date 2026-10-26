@@ -87,6 +87,6 @@
 
   grid.append(el('p', '', 'Loading…'));
   fetch('/api/products').then(function (r) { return r.json(); })
-    .then(function (rows) { all = Array.isArray(rows) ? rows : []; featured(); render(false); })
+    .then(function (rows) { all = Array.isArray(rows) ? rows : []; render(false); })
     .catch(function () { grid.textContent = ''; grid.append(el('p', '', 'Could not load products. Please refresh.')); });
 })();
