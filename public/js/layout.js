@@ -13,9 +13,12 @@
 
   var head = `
 <div class="zx-bar"><div class="zx-bar-in">
+  <div class="zx-bar-left">
   <a href="/contact.html">📍 ${ADDR}</a>
   <a href="mailto:${EMAIL}">✉️ ${EMAIL}</a>
   <a href="https://wa.me/${WA}" target="_blank" rel="noopener">📞 ${WA_TXT}</a>
+</div>
+  <a class="zx-admin" href="/admin.html">🔐 Admin</a>
 </div></div>
 <header class="zx-header"><div class="zx-inner">
   <button id="menu-btn" class="zx-menu-btn" aria-label="Open menu">☰</button>
@@ -42,6 +45,7 @@
   <a href="/faqs.html" class="menu-item">❓ FAQs</a>
   <a href="/about.html" class="menu-item">ℹ️ About</a>
   <a href="/contact.html" class="menu-item">📞 Contact</a>
+  <a href="/admin.html" class="menu-item">🔐 Admin</a>
   <div class="menu-divider"></div>
   <div id="category-menu" class="category-menu"></div>
 </aside>`;
@@ -90,10 +94,13 @@ body{padding-top:0!important}
 html{scroll-padding-top:80px}
 .zx-wrap{max-width:1200px;margin:0 auto;padding:0 1rem}
 .zx-bar{background:#0b0d12;color:#cfd3dc;font-size:.82rem}
-.zx-bar-in{max-width:1200px;margin:0 auto;padding:.45rem 1rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.6rem}
+.zx-bar-in{max-width:1200px;margin:0 auto;padding:.45rem 1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.3rem 1rem}
+.zx-bar-left{display:flex;flex-wrap:wrap;gap:.3rem 1.6rem}
 .zx-bar a{color:#cfd3dc;text-decoration:none}
 .zx-bar a:hover{color:#fff}
-@media(max-width:640px){.zx-bar a:first-child{display:none}}
+.zx-bar .zx-admin{font-weight:700;color:#fff;border:1px solid #4a4f5c;border-radius:999px;padding:.1rem .8rem}
+.zx-bar .zx-admin:hover{background:#d32f2f;border-color:#d32f2f}
+@media(max-width:640px){.zx-bar-left a:first-child{display:none}.zx-bar-in{justify-content:center}}
 .zx-header{position:sticky;top:0;z-index:900;background:#14171f;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .zx-inner{max-width:1200px;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:1rem}
 .zx-menu-btn{background:#fff;color:#14171f;border:0;border-radius:8px;width:42px;height:42px;font-size:1.3rem;cursor:pointer}
