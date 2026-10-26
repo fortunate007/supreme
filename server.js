@@ -531,6 +531,8 @@ app.get('/api/_health', wrap(async (req, res) => {
 }));
 
 // ---------- Secret admin route ----------
+require('./reviews')({ app, query, all, one, wrap, requireAdmin, adminPath: process.env.ADMIN_PATH || '/supreme-control-9x7k' });
+
 app.get(process.env.ADMIN_PATH || '/supreme-control-9x7k', (req, res) => {
   res.sendFile(path.join(__dirname, 'private', 'admin.html'));
 });

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Reviews | Supreme admin</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;max-width:860px;margin:0 auto;padding:1rem;background:#f4f5f7;color:#222}
+h1{font-size:1.3rem}
+.row{background:#fff;border:1px solid #ddd;border-radius:10px;padding:.8rem 1rem;margin:.7rem 0}
+.row.pending{border-left:5px solid #f5a623}.row.live{border-left:5px solid #2e7d32}
+.meta{font-size:.85rem;color:#555}.stars{color:#f5a623;letter-spacing:2px}
+.row p{margin:.5rem 0}.btns{display:flex;gap:.5rem;flex-wrap:wrap}
+button{padding:.45rem .9rem;border:0;border-radius:8px;cursor:pointer;font-weight:700;color:#fff}
+.ok{background:#2e7d32}.off{background:#777}.del{background:#c62828}
+#msg{font-weight:600}
+</style></head><body>
+<h1>Customer reviews</h1>
+<p id="msg">Loading...</p>
+<div id="list"></div>
+<script>
+(function () {
+  var base = location.pathname.replace(/\/reviews\/?$/, '') || '/';
+  var msg = document.getElementById('msg'), list = document.getElementById('list');
+
+  function api(method, url, body) {
+    return fetch(url, { method: method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
+      .then(function (r) {
+        if (r.status === 401 || r.status === 403) throw new Error('auth');
+        if (!r.ok) throw new Error('Request failed (' + r.status + ')');
+        return r.json();
+      });
+  }
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function stars(n) { return '\u2605\u2605\u2605\u2605\u2605'.slice(0, n) + '\u2606\u2606\u2606\u2606\u2606'.slice(0, 5 - n); }
+  function btn(label, cls, fn) { var b = el('button', cls, label); b.type = 'button'; b.onclick = fn; return b; }
+  function row(r) {
+    var d = el('div', 'row ' + (r.approved ? 'live' : 'pending'));
+    var meta = el('div', 'meta');
+    meta.appendChild(el('span', 'stars', stars(r.rating)));
+    meta.appendChild(document.createTextNode('  ' + r.name + ' \u00b7 ' + new Date(r.created_at).toLocaleDateString() + ' \u00b7 ' + (r.approved ? 'Published' : 'Waiting for approval')));
+    d.appendChild(meta);
+    d.appendChild(el('p', '', r.comment));
+    var b = el('div', 'btns');
+    b.appendChild(r.approved
+      ? btn('Unpublish', 'off', function () { act('PUT', r.id, { approved: 0 }); })
+      : btn('Approve', 'ok', function () { act('PUT', r.id, { approved: 1 }); }));
+    b.appendChild(btn('Delete', 'del', function () { if (confirm('Delete this review?')) act('DELETE', r.id); }));
+    d.appendChild(b);
+    return d;
+  }
+  function act(method, id, body) {
+    api(method, '/api/admin/reviews/' + id, body).then(load).catch(function (e) { msg.textContent = e.message === 'auth' ? 'Please log in to the admin panel first.' : e.message; });
+  }
+  function load() {
+    api('GET', '/api/admin/reviews').then(function (rows) {
+      list.innerHTML = '';
+      var waiting = rows.filter(function (r) { return !r.approved; }).length;
+      msg.textContent = rows.length ? (waiting + ' waiting for approval, ' + (rows.length - waiting) + ' published.') : 'No reviews yet.';
+      rows.forEach(function (r) { list.appendChild(row(r)); });
+    }).catch(function (e) {
+      if (e.message === 'auth') {
+        msg.textContent = 'Please log in to the admin panel first: ';
+        var a = el('a', '', 'open the admin panel'); a.href = base;
+        msg.appendChild(a);
+        msg.appendChild(document.createTextNode(', then come back to this page.'));
+      } else { msg.textContent = e.message; }
+    });
+  }
+  load();
+})();
+</script></body></html>
