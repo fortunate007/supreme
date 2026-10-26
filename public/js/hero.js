@@ -31,19 +31,19 @@
 
   function build(list) {
     root.textContent = '';
-    var vp = el('div', 'hero-viewport');
-    track = el('div', 'hero-track');
+    var vp = el('div', 'zh-viewport');
+    track = el('div', 'zh-track');
     if (reduce) track.style.transition = 'none';
     vp.append(track);
 
     list.forEach(function (p, n) {
-      var a = el('a', 'hero-slide'); a.href = '/product.html?id=' + p.id;
+      var a = el('a', 'zh-slide'); a.href = '/product.html?id=' + p.id;
       a.setAttribute('role', 'group'); a.setAttribute('aria-roledescription', 'slide');
       a.setAttribute('aria-label', (n + 1) + ' of ' + list.length + ': ' + (p.name || 'Product'));
-      var cap = el('div', 'hero-cap');
-      cap.append(el('span', 'feat-tag', 'Featured'), el('h2', '', p.name),
+      var cap = el('div', 'zh-cap');
+      cap.append(el('span', 'zh-tag', 'Featured'), el('h2', '', p.name),
                  el('p', '', p.description || p.category_name || ''),
-                 el('strong', 'hero-price', money(p.price)), el('span', 'feat-link', 'View Details →'));
+                 el('strong', 'zh-price', money(p.price)), el('span', 'zh-link', 'View Details →'));
       var img = document.createElement('img');
       img.src = p.image || PH; img.alt = ''; img.decoding = 'async';
       if (n > 0) img.loading = 'lazy';
@@ -54,17 +54,17 @@
     root.append(vp);
     if (list.length < 2) return;
 
-    var prev = el('button', 'hero-nav hero-prev', '‹'); prev.type = 'button'; prev.setAttribute('aria-label', 'Previous slide');
-    var next = el('button', 'hero-nav hero-next', '›'); next.type = 'button'; next.setAttribute('aria-label', 'Next slide');
+    var prev = el('button', 'zh-nav zh-prev', '‹'); prev.type = 'button'; prev.setAttribute('aria-label', 'Previous slide');
+    var next = el('button', 'zh-nav zh-next', '›'); next.type = 'button'; next.setAttribute('aria-label', 'Next slide');
     prev.addEventListener('click', function () { show(idx - 1); start(); });
     next.addEventListener('click', function () { show(idx + 1); start(); });
 
-    var ctrl = el('div', 'hero-ctrl');
-    pauseBtn = el('button', 'hero-pause'); pauseBtn.type = 'button';
+    var ctrl = el('div', 'zh-ctrl');
+    pauseBtn = el('button', 'zh-pause'); pauseBtn.type = 'button';
     pauseBtn.addEventListener('click', function () { userPaused = !userPaused; setPauseUi(); });
-    var dotWrap = el('div', 'hero-dots');
+    var dotWrap = el('div', 'zh-dots');
     list.forEach(function (p, n) {
-      var d = el('button', 'hero-dot'); d.type = 'button'; d.setAttribute('aria-label', 'Go to slide ' + (n + 1));
+      var d = el('button', 'zh-dot'); d.type = 'button'; d.setAttribute('aria-label', 'Go to slide ' + (n + 1));
       d.addEventListener('click', function () { show(n); start(); });
       dots.push(d); dotWrap.append(d);
     });
