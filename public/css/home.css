@@ -89,3 +89,8 @@
 .zb-row a.zb-tile span{color:#d32f2f}
 .zb-row a.zb-tile:hover{border-color:#d32f2f;box-shadow:0 4px 14px rgba(211,47,47,.15)}
 .zb-row a.zb-tile img{max-height:42px;max-width:100%;object-fit:contain}
+
+/* inventory more link */
+.inv-more{text-align:center;margin-top:1.4rem}
+.inv-more a.inv-all{display:inline-block;padding:.65rem 1.6rem;border:2px solid #d32f2f;border-radius:999px;color:#d32f2f;font-weight:700;text-decoration:none;background:#fff}
+.inv-more a.inv-all:hover{background:#d32f2f;color:#fff}

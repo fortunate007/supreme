@@ -1,8 +1,8 @@
-/* Supreme homepage: featured row, inventory with view toggle, per-page and pagination. */
+/* Supreme homepage: 6 random products with a Large/Compact/List toggle. */
 (function () {
   var grid = document.getElementById('inv-grid');
   if (!grid) return;
-  var WA = '254759929222';
+  var LIMIT = 6, WA = '254759929222';
   var PH = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS</text></svg>');
   function money(n) { return 'KSh ' + Number(n || 0).toLocaleString(); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null && text !== '') e.textContent = text; return e; }
@@ -12,17 +12,10 @@
     return i;
   }
 
-  var all = [], page = 1, per = 8, mode = 'bg';
-  try {
-    mode = localStorage.getItem('supreme_view') || 'bg';
-    per = parseInt(localStorage.getItem('supreme_per'), 10) || 8;
-  } catch (e) {}
+  var mode = 'bg', picked = [];
+  try { mode = localStorage.getItem('supreme_view') || 'bg'; } catch (e) {}
   if (['bg', 'sg', 'l'].indexOf(mode) < 0) mode = 'bg';
-  var pager = document.getElementById('inv-pager'), perSel = document.getElementById('inv-per');
   var toggles = document.querySelectorAll('.view-toggle button');
-  perSel.value = String(per);
-  if (perSel.value !== String(per)) { per = 8; perSel.value = '8'; }
-  function save() { try { localStorage.setItem('supreme_view', mode); localStorage.setItem('supreme_per', per); } catch (e) {} }
 
   function card(p) {
     var c = el('article', 'inv-card');
@@ -42,51 +35,32 @@
     return c;
   }
 
-  function featured() {
-    var row = document.getElementById('feat-row'); row.textContent = '';
-    all.slice(0, 4).forEach(function (p) {
-      var a = el('a', 'feat-card'); a.href = '/product.html?id=' + p.id; a.append(pic(p));
-      var b = el('div', 'feat-body');
-      b.append(el('span', 'feat-tag', 'Featured'), el('h3', '', p.name), el('p', '', p.description || p.category_name || ''),
-               el('strong', '', money(p.price)), el('span', 'feat-link', 'View Details →'));
-      a.append(b); row.append(a);
-    });
-    document.getElementById('featured').hidden = !all.length;
-  }
-
-  function render(scroll) {
-    var pages = Math.max(1, Math.ceil(all.length / per));
-    page = Math.min(page, pages);
+  function render() {
     grid.className = 'inv-grid view-' + mode;
     grid.textContent = '';
-    var slice = all.slice((page - 1) * per, page * per);
-    if (!slice.length) grid.append(el('p', '', 'No products yet.'));
-    slice.forEach(function (p) { grid.append(card(p)); });
+    if (!picked.length) grid.append(el('p', '', 'No products yet.'));
+    picked.forEach(function (p) { grid.append(card(p)); });
     toggles.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === mode)); });
-    pager.textContent = '';
-    if (pages > 1) {
-      var add = function (label, p, off, cur) {
-        var b = el('button', '', label); b.type = 'button';
-        if (off) b.disabled = true;
-        if (cur) b.setAttribute('aria-current', 'page');
-        b.addEventListener('click', function () { page = p; render(true); });
-        pager.append(b);
-      };
-      add('Prev', page - 1, page === 1);
-      for (var i = 1; i <= pages; i++) {
-        if (i === 1 || i === pages || Math.abs(i - page) <= 1) add(String(i), i, false, i === page);
-        else if (i === 2 || i === pages - 1) pager.append(el('span', '', '…'));
-      }
-      add('Next', page + 1, page === pages);
-    }
-    if (scroll) document.getElementById('inventory').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  toggles.forEach(function (b) {
+    b.addEventListener('click', function () {
+      mode = b.dataset.view;
+      try { localStorage.setItem('supreme_view', mode); } catch (e) {}
+      render();
+    });
+  });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
   }
 
-  toggles.forEach(function (b) { b.addEventListener('click', function () { mode = b.dataset.view; save(); render(false); }); });
-  perSel.addEventListener('change', function () { per = parseInt(perSel.value, 10) || 8; page = 1; save(); render(false); });
-
   grid.append(el('p', '', 'Loading…'));
-  fetch('/api/products').then(function (r) { return r.json(); })
-    .then(function (rows) { all = Array.isArray(rows) ? rows : []; render(false); })
-    .catch(function () { grid.textContent = ''; grid.append(el('p', '', 'Could not load products. Please refresh.')); });
+  fetch('/api/products').then(function (r) { return r.json(); }).then(function (rows) {
+    rows = Array.isArray(rows) ? rows : [];
+    var withImg = rows.filter(function (p) { return /^https?:/.test(p.image || ''); });
+    var pool = withImg.length >= LIMIT ? withImg : rows;
+    picked = shuffle(pool.slice()).slice(0, LIMIT);
+    render();
+  }).catch(function () { grid.textContent = ''; grid.append(el('p', '', 'Could not load products. Please refresh.')); });
 })();

@@ -1,0 +1,22 @@
+.rv-home{padding:2.2rem 1rem;background:rgba(128,128,128,.08)}
+.rv-wrap,.rv-page{max-width:960px;margin:0 auto}
+.rv-wrap h2,.rv-page h2{margin:0 0 .4rem}
+.rv-sum,.rv-summary{margin:.2rem 0 1.2rem;opacity:.9}
+.rv-grid,.rv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+.rv-card,.rv-form{background:#fff;color:#222;border:1px solid rgba(128,128,128,.25);border-radius:12px;padding:1rem;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.rv-top{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.rv-stars{color:#f5a623;letter-spacing:2px}
+.rv-date{font-size:.75rem;opacity:.6}
+.rv-text{margin:.6rem 0;line-height:1.5}
+.rv-name{margin:0;font-weight:700;font-size:.9rem}
+.rv-cta{margin-top:1.2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.rv-link{font-weight:700}
+.rv-form{display:grid;gap:.8rem;margin:1.2rem 0 1.6rem;max-width:620px}
+.rv-form h3{margin:0}
+.rv-form label{display:grid;gap:.3rem;font-weight:600;font-size:.9rem}
+.rv-form input,.rv-form textarea{font:inherit;padding:.6rem .7rem;border:1px solid #bbb;border-radius:8px;background:#fff;color:#222}
+.rv-pick{display:flex;gap:.2rem}
+.rv-pick button{background:none;border:0;font-size:1.9rem;line-height:1;color:#c9c9c9;cursor:pointer;padding:0 .1rem}
+.rv-pick button.on{color:#f5a623}
+.rv-hp{position:absolute !important;left:-9999px;width:1px;height:1px;opacity:0}
+.rv-msg{margin:0;font-weight:600}.rv-msg.err{color:#c62828}.rv-msg.ok{color:#2e7d32}

@@ -5,3 +5,9 @@ supreme.db*
 server.log
 repo.bundle
 products.csv
+*.bak.*
+supreme.db*
+server.log
+repo.bundle
+.env
+node_modules
