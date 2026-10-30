@@ -11,3 +11,4 @@ server.log
 repo.bundle
 .env
 node_modules
+.deploy.env
