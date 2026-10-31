@@ -1,0 +1,6 @@
+.zx-logo{display:flex;align-items:center;gap:.6rem}
+.zx-logo .zx-logo-text{color:#fff}
+.zx-logo em{font-style:normal;color:#e53935}
+.zx-logo-img{display:block;height:48px;width:auto}
+.zx-foot-logo{display:block;width:84px;height:auto;margin-bottom:.6rem}
+@media(max-width:460px){.zx-logo .zx-logo-text{display:none}}

@@ -1,7 +1,0 @@
-node_modules
-.env
-*.bak.*
-supreme.db*
-server.log
-repo.bundle
-products.csv

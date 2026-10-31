@@ -530,6 +530,10 @@ app.get('/api/_health', wrap(async (req, res) => {
   });
 }));
 
+// ---------- Admin paths (lets the dashboard find the secret admin URL) ----------
+app.get('/api/admin/paths', requireAdmin, (req, res) =>
+  res.json({ base: process.env.ADMIN_PATH || '/supreme-control-9x7k' }));
+
 // ---------- Secret admin route ----------
 require('./reviews')({ app, query, all, one, wrap, requireAdmin, adminPath: process.env.ADMIN_PATH || '/supreme-control-9x7k' });
 

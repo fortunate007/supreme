@@ -1,5 +1,9 @@
 /* Supreme shared layout (Zen-style). Replaces each page's old banner, header, drawer, WhatsApp button and footer. */
 (function () {
+
+  var lk = document.createElement('link'); lk.rel = 'stylesheet'; lk.href = '/css/logo.css'; document.head.appendChild(lk);
+  document.querySelectorAll('link[rel~="icon"]').forEach(function (l) { l.remove(); });
+  var ic = document.createElement('link'); ic.rel = 'icon'; ic.type = 'image/png'; ic.href = '/img/favicon.png'; document.head.appendChild(ic);
   var WA = '254759929222', WA_TXT = '+254 759 929 222';
   var EMAIL = 'info@supremeaccessories.com';
   var ADDR = 'Kirinyaga Road, next to Kingdom Bank, Nairobi';
@@ -22,7 +26,7 @@
 </div></div>
 <header class="zx-header"><div class="zx-inner">
   <button id="menu-btn" class="zx-menu-btn" aria-label="Open menu">☰</button>
-  <a href="/" class="zx-logo">SUPREME <span>AUTO PARTS</span></a>
+  <a href="/" class="zx-logo"><img class="zx-logo-img" src="/img/logo.webp" alt="" width="49" height="48"><span class="zx-logo-text">SUPREME <em>AUTO PARTS</em></span></a>
   <nav class="zx-nav" aria-label="Main">
     <a class="zx-link" href="/"${cur('/')}>Home</a>
     <a class="zx-link" href="/products.html"${cur('/products.html')}>Shop</a>
@@ -54,7 +58,7 @@
 <a class="zx-wa" href="https://wa.me/${WA}" target="_blank" rel="noopener" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">💬</a>
 <footer class="zx-footer"><div class="zx-wrap">
   <div class="zx-foot-grid">
-    <div><h4>Supreme Auto Parts</h4><a href="mailto:${EMAIL}">✉️ ${EMAIL}</a><a href="https://wa.me/${WA}" target="_blank" rel="noopener">📞 ${WA_TXT}</a><a href="/contact.html">📍 ${ADDR}</a></div>
+    <div><img class="zx-foot-logo" src="/img/logo.webp" alt="Supreme Auto Parts" width="84" height="82"><h4>Supreme Auto Parts</h4><a href="mailto:${EMAIL}">✉️ ${EMAIL}</a><a href="https://wa.me/${WA}" target="_blank" rel="noopener">📞 ${WA_TXT}</a><a href="/contact.html">📍 ${ADDR}</a></div>
     <div><h4>Open Hours</h4><p>Monday to Saturday<br>8:00 AM – 6:00 PM</p></div>
     <div><h4>Navigation</h4><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a><a href="/faqs.html">FAQs</a><a href="/about.html">About</a><a href="/contact.html">Contact</a></div>
   </div>

@@ -12,3 +12,4 @@ repo.bundle
 .env
 node_modules
 .deploy.env
+.patch-backup-*
