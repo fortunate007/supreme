@@ -47,7 +47,7 @@
     target.classList.add('why-block');
     target.innerHTML = `
       <div class="why-wrap">
-        <h2>Why Supreme Auto Parts?</h2>
+        <h2>Why Supreme Auto Parts and Accessories?</h2>
         <p class="why-sub">Kenya's trusted partner for genuine auto parts & fitment services.</p>
         <div class="why-grid">
           ${WHY.map(w=>`
@@ -120,7 +120,7 @@
         const price = p.price != null ? (isNaN(p.price) ? p.price : 'KSh ' + Number(p.price).toLocaleString()) : '';
         const desc  = p.description || p.desc || '';
         const id    = p.id != null ? p.id : name;
-        const msg   = encodeURIComponent(`Hi Supreme Auto Parts, I'm interested in: ${name}${price?` (${price})`:''}`);
+        const msg   = encodeURIComponent(`Hi Supreme Auto Parts and Accessories, I'm interested in: ${name}${price?` (${price})`:''}`);
         return `
           <div class="product-card" data-id="${id}">
             <div class="pc-media"><img loading="lazy" alt="${name}" src="${productImgUrl(p)}"

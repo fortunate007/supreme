@@ -3,7 +3,7 @@
   var grid = document.getElementById('inv-grid');
   if (!grid) return;
   var LIMIT = 6, WA = '254759929222';
-  var PH = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS</text></svg>');
+  var PH = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS AND ACCESSORIES</text></svg>');
   function money(n) { return 'KSh ' + Number(n || 0).toLocaleString(); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null && text !== '') e.textContent = text; return e; }
   function pic(p) {
@@ -30,7 +30,7 @@
     var add = el('button', 'inv-add', 'Add to Cart'); add.type = 'button';
     add.addEventListener('click', function () { if (typeof addToCart === 'function') addToCart(p); });
     var wa = el('a', 'inv-wa', '💬'); wa.target = '_blank'; wa.rel = 'noopener'; wa.setAttribute('aria-label', 'Order on WhatsApp');
-    wa.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hi Supreme Auto Parts, I want to order: ' + p.name + ' (' + money(p.price) + ')');
+    wa.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hi Supreme Auto Parts and Accessories, I want to order: ' + p.name + ' (' + money(p.price) + ')');
     act.append(add, wa); b.append(act); c.append(a, b);
     return c;
   }

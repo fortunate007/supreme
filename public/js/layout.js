@@ -58,11 +58,11 @@
 <a class="zx-wa" href="https://wa.me/${WA}" target="_blank" rel="noopener" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">💬</a>
 <footer class="zx-footer"><div class="zx-wrap">
   <div class="zx-foot-grid">
-    <div><img class="zx-foot-logo" src="/img/logo.webp" alt="Supreme Auto Parts" width="84" height="82"><h4>Supreme Auto Parts</h4><a href="mailto:${EMAIL}">✉️ ${EMAIL}</a><a href="https://wa.me/${WA}" target="_blank" rel="noopener">📞 ${WA_TXT}</a><a href="/contact.html">📍 ${ADDR}</a></div>
+    <div><img class="zx-foot-logo" src="/img/logo.webp" alt="Supreme Auto Parts and Accessories" width="84" height="82"><h4>Supreme Auto Parts and Accessories</h4><a href="mailto:${EMAIL}">✉️ ${EMAIL}</a><a href="https://wa.me/${WA}" target="_blank" rel="noopener">📞 ${WA_TXT}</a><a href="/contact.html">📍 ${ADDR}</a></div>
     <div><h4>Open Hours</h4><p>Monday to Saturday<br>8:00 AM – 6:00 PM</p></div>
     <div><h4>Navigation</h4><a href="/">Home</a><a href="/products.html">Shop</a><a href="/offers.html">Offers</a><a href="/faqs.html">FAQs</a><a href="/about.html">About</a><a href="/contact.html">Contact</a></div>
   </div>
-  <div class="zx-foot-bottom">© ${new Date().getFullYear()} Supreme Auto Parts. All rights reserved.</div>
+  <div class="zx-foot-bottom">© ${new Date().getFullYear()} Supreme Auto Parts and Accessories. All rights reserved.</div>
 </div></footer>`;
 
   var modal = `
@@ -191,7 +191,7 @@ html{scroll-padding-top:80px}
       var j = await r.json().catch(function () { return {}; });
       if (!r.ok) throw new Error(j.error || 'Could not send. Please try again.');
       document.getElementById('inq-wa').href = 'https://wa.me/' + WA + '?text=' +
-        encodeURIComponent('Hi Supreme Auto Parts, ' + d.subject + '. ' + d.message + '\nName: ' + d.name + '\nPhone: ' + d.phone);
+        encodeURIComponent('Hi Supreme Auto Parts and Accessories, ' + d.subject + '. ' + d.message + '\nName: ' + d.name + '\nPhone: ' + d.phone);
       wrap.hidden = true; done.hidden = false; form.reset();
     } catch (x) { err.textContent = x.message; }
     btn.disabled = false; btn.textContent = 'Send Inquiry';

@@ -2,7 +2,7 @@ const API = '/api';
 const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">' +
   '<rect width="100%" height="100%" fill="#1a1a1a"/>' +
-  '<text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS</text>' +
+  '<text x="50%" y="50%" fill="#d32f2f" font-family="Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS AND ACCESSORIES</text>' +
   '</svg>'
 );
 let cart = JSON.parse(localStorage.getItem('supreme_cart') || '[]');
@@ -12,7 +12,7 @@ const EMAIL = 'info@supremeaccessories.com';
 const money = n => 'KSh ' + Number(n || 0).toLocaleString();
 const waLink = msg => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 const placeholder = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" fill="#d32f2f" font-family="sans-serif" font-size="28" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS</text></svg>`);
+  `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" fill="#d32f2f" font-family="sans-serif" font-size="28" font-weight="900" text-anchor="middle" dominant-baseline="middle">SUPREME AUTO PARTS AND ACCESSORIES</text></svg>`);
 
 function saveCart(){ localStorage.setItem('supreme_cart', JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount(){ const el=document.getElementById('cart-count'); if(el) el.textContent = cart.reduce((s,i)=>s+i.qty,0); }
@@ -59,7 +59,7 @@ async function loadOffers(limit){
   const offers = await api('/offers');
   const list = limit ? offers.slice(0, limit) : offers;
   if (!list.length){ grid.innerHTML = '<p>No active offers right now. Check back soon!</p>'; return; }
-  grid.innerHTML = list.map(o => `<div class="offer-card"><span class="offer-tag">🔥 OFFER</span>${o.image ? `<img src="${o.image}" alt="${o.title}">` : ''}<div class="offer-info"><h3>${o.title}</h3><p class="desc">${o.description||''}</p><p class="price">${money(o.price)} ${o.old_price ? `<span class="old-price">${money(o.old_price)}</span>` : ''}</p><div class="offer-actions"><a class="btn green" href="${waLink('Hi Supreme Auto Parts, I am interested in the offer: ' + o.title)}" target="_blank">Order on WhatsApp</a></div></div></div>`).join('');
+  grid.innerHTML = list.map(o => `<div class="offer-card"><span class="offer-tag">🔥 OFFER</span>${o.image ? `<img src="${o.image}" alt="${o.title}">` : ''}<div class="offer-info"><h3>${o.title}</h3><p class="desc">${o.description||''}</p><p class="price">${money(o.price)} ${o.old_price ? `<span class="old-price">${money(o.old_price)}</span>` : ''}</p><div class="offer-actions"><a class="btn green" href="${waLink('Hi Supreme Auto Parts and Accessories, I am interested in the offer: ' + o.title)}" target="_blank">Order on WhatsApp</a></div></div></div>`).join('');
 }
 async function loadProductsPage(){
   const grid = document.getElementById('products-grid'); if (!grid) return;

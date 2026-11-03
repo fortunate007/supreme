@@ -358,7 +358,7 @@ app.post('/api/orders', wrap(async (req, res) => {
     `INSERT INTO orders (customer_name, phone, email, location, items, total)
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
     [customer_name, phone, email || '', location, JSON.stringify(items), total || 0]);
-  res.json({ id: row.id, message: 'Order received. Supreme Auto Parts will contact you shortly.' });
+  res.json({ id: row.id, message: 'Order received. Supreme Auto Parts and Accessories will contact you shortly.' });
 }));
 
 // ---------- Inquiries ----------
@@ -555,7 +555,7 @@ app.use((err, req, res, next) => {
 initDatabase()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Supreme Auto Parts running at http://localhost:${PORT}`);
+      console.log(`Supreme Auto Parts and Accessories running at http://localhost:${PORT}`);
       console.log(`Admin panel at http://localhost:${PORT}${process.env.ADMIN_PATH || '/supreme-control-9x7k'}`);
       console.log(`Image storage: ${storageReady ? 'Supabase Storage' : 'NOT CONFIGURED'}`);
     });

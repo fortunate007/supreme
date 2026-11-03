@@ -17,7 +17,7 @@
   document.head.appendChild(css);
   var hasTag = /Quality is Our Name/i.test(host.textContent || '');
   var intro = document.createElement('section'); intro.className = 'zab-intro';
-  intro.innerHTML = '<img class="zab-logo" src="/img/logo.webp" alt="Supreme Auto Parts logo" width="140" height="137" onerror="this.remove()"><div><h2>Supreme Auto Parts</h2>' +
+  intro.innerHTML = '<img class="zab-logo" src="/img/logo.webp" alt="Supreme Auto Parts and Accessories logo" width="140" height="137" onerror="this.remove()"><div><h2>Supreme Auto Parts and Accessories</h2>' +
     (hasTag ? '' : '<p><strong>At Supreme Auto Spares; Quality is Our Name</strong></p>') +
     '<p>All parts &amp; accessories for all car models • Kirinyaga Road, Next to Kingdom Bank, Nairobi, Kenya • Serving East Africa</p>' +
     '<div class="zab-links"><a href="/products.html">Shop all parts</a><a href="/offers.html">Hot offers</a><a href="/contact.html">Visit our shop</a></div></div>';
