@@ -56,4 +56,17 @@
 <section style="padding:16px;font-size:14px;text-align:center">
 <p><strong>Supreme Auto Parts and Accessories</strong> sells parts and accessories for all car brands and models. Visit us on Kirinyaga Road, next to Kingdom Bank, Nairobi, or call <a href="tel:+254759929222">+254 759 929 222</a>. We deliver across East Africa within 72 hours. <a href="/contact.html">Find us &amp; get directions</a></p>
 </section>
+<!-- hide-banner-counter -->
+<script>
+(function () {
+  var re = /^\s*\d+\s*\/\s*\d+\s*$/;
+  function hide() {
+    document.querySelectorAll("body *").forEach(function (el) {
+      if (!el.children.length && re.test(el.textContent)) el.style.display = "none";
+    });
+  }
+  document.addEventListener("DOMContentLoaded", hide);
+  new MutationObserver(hide).observe(document.documentElement, {childList: true, subtree: true, characterData: true});
+})();
+</script>
 </body></html>
